@@ -1,124 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CYBER_CONNECT | Rolloutwithme1</title>
+    <title>LIDAR_SCAN | Rolloutwithme1</title>
     <style>
-        body { margin: 0; background: #010a01; overflow: hidden; font-family: 'Courier New', monospace; }
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; }
         canvas { display: block; }
-        .dashboard-ui {
+        .hud {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; border: 20px solid rgba(0, 255, 65, 0.1);
-            box-sizing: border-box;
+            pointer-events: none; border: 2px solid rgba(0, 255, 204, 0.2);
+            box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; padding: 20px;
         }
-        .text-glitch {
-            position: absolute; top: 40px; left: 40px; color: #00ff41;
-            text-transform: uppercase; letter-spacing: 5px; font-weight: bold;
-            text-shadow: 2px 2px #ff000033;
+        .stats { color: #00ffcc; font-size: 14px; text-shadow: 0 0 5px #00ffcc; }
+        .form-area {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(0, 20, 20, 0.7); border: 1px solid #00ffcc;
+            padding: 30px; border-radius: 10px; pointer-events: auto;
+            text-align: center; color: #00ffcc; backdrop-filter: blur(10px);
         }
-        .control-panel {
-            position: absolute; bottom: 40px; left: 40px;
-            background: rgba(0, 20, 0, 0.8); border: 1px solid #00ff41;
-            padding: 20px; color: #00ff41; pointer-events: auto;
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
-        }
-        input { background: #000; border: 1px solid #00ff41; color: #00ff41; padding: 5px; width: 100%; margin: 10px 0; }
-        button { background: #00ff41; color: #000; border: none; padding: 10px; width: 100%; cursor: pointer; font-weight: bold; }
+        input { background: transparent; border: 1px solid #00ffcc; color: #00ffcc; padding: 10px; margin: 10px 0; width: 200px; outline: none; }
+        button { background: #00ffcc; color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { box-shadow: 0 0 20px #00ffcc; }
     </style>
 </head>
 <body>
 
-    <canvas id="canvas1"></canvas>
-    
-    <div class="dashboard-ui">
-        <div class="text-glitch">System: Connected<br>User: Rolloutwithme1</div>
+    <canvas id="starfield"></canvas>
+
+    <div class="hud">
+        <div class="stats">
+            [ COORDINATES: 40.7128° N, 74.0060° W ]<br>
+            [ DEPTH_MAP: ACTIVE ]<br>
+            [ CONNECTION: SECURE_SSL ]
+        </div>
+        <div class="stats" style="text-align: right;">
+            SYSTEM_UPTIME: 99.9%<br>
+            BATTERY: [||||||||--] 82%
+        </div>
     </div>
 
-    <div class="control-panel">
-        <p>> ENCRYPTED SUBMISSION</p>
+    <div class="form-area">
+        <h3>ACCESS TERMINAL</h3>
         <form action="https://formspree.io/f/mjgakbzq" method="POST">
-            <input type="text" name="name" placeholder="YOUR_ID" required>
-            <input type="text" name="thought" placeholder="ENTER_THOUGHT" required>
-            <button type="submit">UPLOAD TO CLOUD</button>
+            <input type="text" name="user" placeholder="ENGINEER_NAME" required><br>
+            <input type="text" name="data" placeholder="UPLOAD_LOG" required><br>
+            <button type="submit">INITIATE UPLOAD</button>
         </form>
     </div>
 
     <script>
-        const canvas = document.getElementById('canvas1');
+        const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        let particlesArray;
-        let mouse = { x: null, y: null, radius: (canvas.height/80) * (canvas.width/80) };
-
-        window.addEventListener('mousemove', function(event) {
-            mouse.x = event.x;
-            mouse.y = event.y;
-        });
-
-        class Particle {
-            constructor(x, y, directionX, directionY, size, color) {
-                this.x = x; this.y = y;
-                this.directionX = directionX; this.directionY = directionY;
-                this.size = size; this.color = color;
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-                ctx.fillStyle = '#00ff41';
-                ctx.fill();
-            }
-            update() {
-                if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
-                if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
-                this.x += this.directionX;
-                this.y += this.directionY;
-                this.draw();
-            }
-        }
+        let stars = [];
+        let numStars = 600;
+        let speed = 2;
 
         function init() {
-            particlesArray = [];
-            let numberOfParticles = (canvas.height * canvas.width) / 9000;
-            for (let i = 0; i < numberOfParticles; i++) {
-                let size = (Math.random() * 5) + 1;
-                let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
-                let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-                let directionX = (Math.random() * 5) - 2.5;
-                let directionY = (Math.random() * 5) - 2.5;
-                particlesArray.push(new Particle(x, y, directionX, directionY, size));
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            stars = [];
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width - canvas.width / 2,
+                    y: Math.random() * canvas.height - canvas.height / 2,
+                    z: Math.random() * canvas.width,
+                    o: Math.random()
+                });
             }
         }
 
-        function connect() {
-            let opacityValue = 1;
-            for (let a = 0; a < particlesArray.length; a++) {
-                for (let b = a; b < particlesArray.length; b++) {
-                    let distance = (( particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
-                    + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
-                    if (distance < (canvas.width/7) * (canvas.height/7)) {
-                        opacityValue = 1 - (distance/20000);
-                        ctx.strokeStyle='rgba(0, 255, 65,' + opacityValue + ')';
-                        ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
-                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
-                        ctx.stroke();
-                    }
+        function draw() {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+
+            for (let i = 0; i < numStars; i++) {
+                let s = stars[i];
+                let x = s.x / (s.z / canvas.width);
+                let y = s.y / (s.z / canvas.width);
+                let size = (1 - s.z / canvas.width) * 3;
+
+                if (x < -canvas.width / 2 || x > canvas.width / 2 || y < -canvas.height / 2 || y > canvas.height / 2) {
+                    s.z = canvas.width;
+                } else {
+                    s.z -= speed;
+                    ctx.beginPath();
+                    ctx.fillStyle = "#00ffcc";
+                    ctx.arc(x, y, size, 0, Math.PI * 2);
+                    ctx.fill();
                 }
             }
+            ctx.translate(-canvas.width / 2, -canvas.height / 2);
+            requestAnimationFrame(draw);
         }
 
-        function animate() {
-            requestAnimationFrame(animate);
-            ctx.clearRect(0,0, innerWidth, innerHeight);
-            for (let i = 0; i < particlesArray.length; i++) {
-                particlesArray[i].update();
-            }
-            connect();
-        }
+        window.addEventListener('resize', init);
         init();
-        animate();
+        draw();
     </script>
 </body>
-</html>
+</html>V
