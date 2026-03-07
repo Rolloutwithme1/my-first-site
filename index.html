@@ -1,59 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Friendship Quiz | Rolloutwithme1</title>
+    <title>IMPRESSION_v2.0 | Rolloutwithme1</title>
     <style>
-        body { 
-            background-color: #fff0f6; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            display: flex; justify-content: center; align-items: center; 
-            min-height: 100vh; margin: 0; 
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; }
+        canvas { display: block; }
+        .ui-layer {
+            position: absolute; top: 20px; left: 20px;
+            color: #00ffcc; pointer-events: none;
+            text-shadow: 0 0 10px #00ffcc;
         }
-        .card {
-            background: white; padding: 40px; border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 400px;
-            text-align: center;
+        .form-box {
+            position: absolute; bottom: 20px; right: 20px;
+            background: rgba(0, 255, 204, 0.1);
+            padding: 20px; border: 1px solid #00ffcc;
+            backdrop-filter: blur(5px);
         }
-        h1 { color: #d63384; margin-bottom: 10px; }
-        p { color: #666; margin-bottom: 25px; }
-        
-        label { display: block; text-align: left; margin-top: 15px; color: #444; font-weight: bold; }
-        
-        input, textarea { 
-            width: 100%; padding: 12px; margin-top: 5px; 
-            border: 2px solid #ffe0ed; border-radius: 10px; 
-            box-sizing: border-box; outline: none; transition: border-color 0.3s;
+        input, button { 
+            background: black; border: 1px solid #00ffcc; 
+            color: #00ffcc; padding: 10px; margin-top: 5px; 
         }
-        input:focus, textarea:focus { border-color: #d63384; }
-
-        button {
-            background-color: #d63384; color: white; border: none;
-            width: 100%; padding: 15px; margin-top: 25px;
-            border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold;
-            transition: transform 0.2s, background-color 0.2s;
-        }
-        button:hover { background-color: #a32a61; transform: translateY(-2px); }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h1>Friendship Test! 🌸</h1>
-        <p>Fill this out and it will be sent directly to me.</p>
+    <div class="ui-layer">
+        <h1>NEURAL_LINK_ACTIVE</h1>
+        <p>> MOVE MOUSE TO DISTURB PARTICLES</p>
+        <p>> STATUS: HIGH_PERFORMANCE</p>
+    </div>
 
+    <div class="form-box">
         <form action="https://formspree.io/f/mjgakbzq" method="POST">
-            
-            <label>Your Name:</label>
-            <input type="text" name="name" placeholder="Enter your name" required>
-
-            <label>What makes us good friends?</label>
-            <textarea name="answer" rows="4" placeholder="Type your answer here..." required></textarea>
-
-            <button type="submit">Send to Rolloutwithme1</button>
+            <input type="text" name="name" placeholder="IDENTIFY YOURSELF" required><br>
+            <input type="text" name="msg" placeholder="SEND ENCRYPTED MESSAGE"><br>
+            <button type="submit">TRANSMIT DATA</button>
         </form>
     </div>
 
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        const mouse = { x: null, y: null, radius: 150 };
+
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.baseX = this.x;
+                this.baseY = this.y;
+                this.density = (Math.random() * 30) + 1;
+            }
+            draw() {
+                ctx.fillStyle = '#00ffcc';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fill();
+            }
+            update() {
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                let forceDirectionX = dx / distance;
+                let forceDirectionY = dy / distance;
+                let maxDistance = mouse.radius;
+                let force = (maxDistance - distance) / maxDistance;
+                let directionX = forceDirectionX * force * this.density;
+                let directionY = forceDirectionY * force * this.density;
+
+                if (distance < mouse.radius) {
+                    this.x -= directionX;
+                    this.y -= directionY;
+                } else {
+                    if (this.x !== this.baseX) {
+                        let dx = this.x - this.baseX;
+                        this.x -= dx / 10;
+                    }
+                    if (this.y !== this.baseY) {
+                        let dy = this.y - this.baseY;
+                        this.y -= dy / 10;
+                    }
+                }
+            }
+        }
+
+        function init() {
+            particles = [];
+            for (let i = 0; i < 1500; i++) {
+                particles.push(new Particle());
+            }
+        }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].draw();
+                particles[i].update();
+            }
+            requestAnimationFrame(animate);
+        }
+        init();
+        animate();
+    </script>
 </body>
 </html>
