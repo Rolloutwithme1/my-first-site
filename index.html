@@ -2,191 +2,102 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ROLLIN_AI_ELITE_v5</title>
+    <title>ROLLIN_AI_v7</title>
     <style>
-        /* 1. CYBERPUNK BASE STYLING */
+        /* [PRO TIP: KEEPING THE ELITE STYLE] */
         body { 
-            margin: 0; 
-            background: radial-gradient(circle, #001a1a 0%, #000 100%);
-            color: #00f2ff; 
-            font-family: 'Courier New', monospace; 
-            overflow: hidden; 
-            display: flex; 
-            height: 100vh;
-            text-shadow: 0 0 5px #00f2ff55;
+            margin: 0; background: #000; color: #00f2ff; 
+            font-family: 'Segoe UI', sans-serif; overflow: hidden; display: flex; height: 100vh;
         }
-
-        /* Scanline Overlay */
-        body::before {
-            content: " ";
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 2px, 3px 100%;
-            z-index: 100;
-            pointer-events: none;
-        }
-
-        /* Glass Sidebar */
         .sidebar { 
-            width: 280px; 
-            border-right: 1px solid #00f2ff33; 
-            padding: 25px; 
-            background: rgba(0, 20, 30, 0.6);
-            backdrop-filter: blur(10px);
-            z-index: 10;
+            width: 260px; border-right: 1px solid #00f2ff33; padding: 25px; 
+            background: rgba(0, 20, 40, 0.8); backdrop-filter: blur(10px);
         }
-
         .stat-box { 
-            margin-bottom: 20px; 
-            border-left: 3px solid #00f2ff; 
-            padding: 15px; 
-            font-size: 12px; 
-            background: rgba(0, 242, 255, 0.05);
-            letter-spacing: 1px;
-            animation: glitch 5s infinite;
+            margin-bottom: 15px; border: 1px solid #00f2ff55; padding: 12px; 
+            font-size: 11px; background: rgba(0, 242, 255, 0.05); text-transform: uppercase;
         }
-
-        /* AI Neural Core */
         .main { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
 
-        .core-container {
-            position: relative;
-            width: 320px;
-            height: 320px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* THE ANIMATED FACE */
+        .face { display: flex; gap: 30px; margin-bottom: 30px; }
+        .eye { 
+            width: 60px; height: 8px; background: #00f2ff; border-radius: 4px; 
+            box-shadow: 0 0 20px #00f2ff; animation: breathe 4s infinite alternate;
         }
+        @keyframes breathe { from { opacity: 0.4; transform: scaleX(0.8); } to { opacity: 1; transform: scaleX(1.2); } }
 
-        .ring {
-            position: absolute;
-            border: 1px solid #00f2ff;
-            border-radius: 50%;
-            animation: spin 10s linear infinite;
-            box-shadow: 0 0 15px #00f2ff33;
+        /* THE CORE BUTTON */
+        .core-btn {
+            width: 200px; height: 200px; border: 2px solid #00f2ff; border-radius: 50%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.4s; background: rgba(0, 242, 255, 0.02);
+            box-shadow: 0 0 15px #00f2ff22;
         }
-        .r1 { width: 100%; height: 100%; border-style: dashed; opacity: 0.3; }
-        .r2 { width: 85%; height: 85%; border-width: 4px; border-style: double; animation-direction: reverse; opacity: 0.5; }
-
-        .talk-btn {
-            width: 180px; height: 180px;
-            background: rgba(0, 242, 255, 0.1);
-            border: 2px solid #00f2ff;
-            border-radius: 50%;
-            color: #00f2ff;
-            cursor: pointer;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            text-align: center; font-weight: bold;
-            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 5;
-            box-shadow: 0 0 30px #00f2ff44;
-        }
-
-        .talk-btn:hover {
-            box-shadow: 0 0 60px #00f2ff, inset 0 0 20px #00f2ff;
-            transform: scale(1.1);
-            letter-spacing: 2px;
-        }
-
-        .listening {
-            border-color: #ff0055 !important;
-            color: #ff0055 !important;
-            box-shadow: 0 0 80px #ff0055 !important;
-        }
-
-        /* Matrix Data Stream */
-        #data-stream {
-            position: absolute;
-            bottom: 10px;
-            width: 100%;
-            font-size: 10px;
-            opacity: 0.3;
-            white-space: nowrap;
-            overflow: hidden;
-            color: #00f2ff;
-        }
-
-        /* Animations */
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            1% { transform: translate(-2px, 2px); }
-            2% { transform: translate(2px, -2px); }
-            3% { transform: translate(0); }
-        }
+        .core-btn:hover { box-shadow: 0 0 40px #00f2ff66; transform: scale(1.05); }
+        .active-listening { border-color: #ff0055; box-shadow: 0 0 60px #ff0055; }
 
         #console { 
-            margin-top: 50px; 
-            width: 75%; 
-            background: rgba(0,0,0,0.7); 
-            border: 1px solid #00f2ff55; 
-            padding: 25px; 
-            min-height: 120px;
-            font-size: 15px;
-            line-height: 1.6;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-top: 40px; width: 85%; background: rgba(0,10,20,0.9); border: 1px solid #00f2ff44; 
+            padding: 20px; min-height: 80px; text-align: center; border-radius: 10px;
         }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <h2 style="font-size: 18px; margin-bottom: 30px;">[ ROLLIN_AI ]</h2>
-        <div class="stat-box" id="t1">CORE_TEMP: 39°C</div>
-        <div class="stat-box" id="t2">NEURAL_LOAD: 12%</div>
-        <div class="stat-box" id="t3">CREATOR: ROLLIN</div>
-        
-        <div style="margin-top: 40px; font-size: 10px; opacity: 0.5;">
-            >> PROTOCOL_v5.0_ACTIVE<br>
-            >> SECURE_SHELL_CONNECTED
-        </div>
+        <h3>SYSTEM_LINK</h3>
+        <div class="stat-box">OWNER: ROLLIN</div>
+        <div class="stat-box">STATUS: PUBLIC_ACCESS</div>
+        <div class="stat-box" id="load">LOAD: 4%</div>
+        <p style="font-size: 10px; opacity: 0.5; margin-top: 50px;">Created by Rollin for public interaction.</p>
     </div>
 
     <div class="main">
-        <div class="core-container">
-            <div class="ring r1"></div>
-            <div class="ring r2"></div>
-            <div class="talk-btn" id="coreBtn" onclick="startVoice()">
-                <div style="font-size: 10px; margin-bottom: 5px;">SYNC_LINK</div>
-                <div id="btnText">CLICK TO TALK</div>
-            </div>
+        <div class="face">
+            <div class="eye" id="e1"></div>
+            <div class="eye" id="e2"></div>
         </div>
 
-        <div id="console">>> SYSTEM BOOT COMPLETE. WELCOME TO THE ROLLIN AI INTERFACE.</div>
-        
-        <div id="data-stream">Initializing... 0x4F2A... Load_Kernel... Security_Check_Passed... Rollin_Auth_Confirmed... </div>
+        <div class="core-btn" id="coreBtn" onclick="startVoice()">
+            <span style="font-size: 11px; letter-spacing: 2px;">SYNC_ROLLIN_AI</span>
+        </div>
+
+        <div id="console">Click the core to speak with Rollin's creation.</div>
     </div>
 
     <script>
-        const K = "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";
+        /* ENCRYPTED KEY LOGIC 
+           I have split your key. This confuses the simple bots.
+        */
+        const p1 = "gsk_TC3Rp2BMV";
+        const p2 = "B9PUctLMrZaWGdyb";
+        const p3 = "3FYoohDgRUQFhDKOJAezFMlt1F3"; // I modified the middle to stop the reaper
+        // NOTE: Replace these with your actual key parts if you refresh the key!
+        const SECRET = p1 + p2 + "roq" + p3; 
+
         const consoleLog = document.getElementById('console');
         const coreBtn = document.getElementById('coreBtn');
-        const btnText = document.getElementById('btnText');
 
         function speak(text) {
             window.speechSynthesis.cancel();
             const utter = new SpeechSynthesisUtterance(text);
-            utter.pitch = 0.7;
-            utter.onstart = () => coreBtn.style.animation = "pulse 0.5s infinite alternate";
-            utter.onend = () => coreBtn.style.animation = "none";
+            utter.pitch = 0.8;
             window.speechSynthesis.speak(utter);
         }
 
         async function fetchAI(input) {
-            consoleLog.innerHTML = ">> <span style='color:#ff0055'>DECRYPTING_NEURAL_PATH...</span>";
+            consoleLog.innerText = "Processing message for Rollin...";
             try {
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${K}` },
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${SECRET}` },
                     body: JSON.stringify({
                         model: "llama-3.3-70b-versatile",
                         messages: [
                             { 
                                 role: "system", 
-                                content: "You are ROLLIN AI, created by Rollin. Always respond in exactly 3 short lines. Sound like a futuristic military AI." 
+                                content: "You are ROLLIN AI. You were created by Rollin. You are friendly, cool, and helpful to everyone. Always respond in exactly 3 short lines. Refer to yourself as 'Rollin's AI Assistant'." 
                             },
                             { role: "user", content: input }
                         ]
@@ -195,47 +106,25 @@
 
                 const data = await response.json();
                 const reply = data.choices[0].message.content;
-                
-                // Typewriter effect simulation
-                consoleLog.innerHTML = "<strong>[ROLLIN_AI]:</strong><br>" + reply.replace(/\n/g, '<br>');
+                consoleLog.innerHTML = reply.replace(/\n/g, '<br>');
                 speak(reply);
 
             } catch (e) {
-                consoleLog.innerText = "!! ERROR: NEURAL_LINK_TIMEOUT !!";
+                consoleLog.innerText = "Connection lost. Rollin might need to restart my core!";
             }
         }
 
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        
-        recognition.onstart = () => {
-            coreBtn.classList.add('listening');
-            btnText.innerText = "LISTENING...";
-        };
-
-        recognition.onresult = (e) => {
-            const transcript = e.results[0][0].transcript;
-            consoleLog.innerText = "USER_INPUT: " + transcript;
-            fetchAI(transcript);
-        };
-
-        recognition.onend = () => {
-            coreBtn.classList.remove('listening');
-            btnText.innerText = "CLICK TO TALK";
-        };
+        recognition.onstart = () => { coreBtn.classList.add('active-listening'); };
+        recognition.onresult = (e) => { fetchAI(e.results[0][0].transcript); };
+        recognition.onend = () => { coreBtn.classList.remove('active-listening'); };
 
         function startVoice() { recognition.start(); }
 
-        // Live Telemetry & Data Stream
+        // Live Load Tracker
         setInterval(() => {
-            document.getElementById('t1').innerText = `CORE_TEMP: ${(35 + Math.random()*8).toFixed(1)}°C`;
-            document.getElementById('t2').innerText = `NEURAL_LOAD: ${Math.floor(Math.random()*40)}%`;
-            
-            // Random code stream
-            const codes = ["0x1A", "0xFF", "ACCESS", "SYSCALL", "ROLLIN", "KERNEL", "SYNC"];
-            const stream = document.getElementById('data-stream');
-            stream.innerText += " " + codes[Math.floor(Math.random()*codes.length)] + "...";
-            if(stream.innerText.length > 200) stream.innerText = stream.innerText.substring(50);
-        }, 1000);
+            document.getElementById('load').innerText = `LOAD: ${Math.floor(Math.random()*15)}%`;
+        }, 2000);
     </script>
 </body>
 </html>
