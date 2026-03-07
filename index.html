@@ -3,83 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rolloutwithme1 | My Website</title>
+    <title>Friendship Quiz | Rolloutwithme1</title>
     <style>
-        /* This is CSS - It makes the site look pretty */
         body { 
-            background-color: #e0f7fa; 
+            background-color: #fff0f6; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            transition: background-color 0.5s ease; /* Makes color change smooth */
+            display: flex; justify-content: center; align-items: center; 
+            min-height: 100vh; margin: 0; 
         }
-
         .card {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: white; padding: 40px; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 400px;
             text-align: center;
-            max-width: 400px;
         }
+        h1 { color: #d63384; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 25px; }
+        
+        label { display: block; text-align: left; margin-top: 15px; color: #444; font-weight: bold; }
+        
+        input, textarea { 
+            width: 100%; padding: 12px; margin-top: 5px; 
+            border: 2px solid #ffe0ed; border-radius: 10px; 
+            box-sizing: border-box; outline: none; transition: border-color 0.3s;
+        }
+        input:focus, textarea:focus { border-color: #d63384; }
 
-        h1 { 
-            color: #00796b; 
-            margin-top: 0;
+        button {
+            background-color: #d63384; color: white; border: none;
+            width: 100%; padding: 15px; margin-top: 25px;
+            border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold;
+            transition: transform 0.2s, background-color 0.2s;
         }
-
-        p { 
-            color: #555; 
-            line-height: 1.6;
-        }
-
-        .btn {
-            background-color: #00796b;
-            color: white;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 30px;
-            display: inline-block;
-            margin-top: 20px;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .btn:hover {
-            transform: scale(1.1); /* Makes button grow slightly when touched */
-            background-color: #004d40;
-        }
+        button:hover { background-color: #a32a61; transform: translateY(-2px); }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h1>🚀 It's Working!</h1>
-        <p>This website is hosted for free on <strong>GitHub Pages</strong>.</p>
-        <p>Created by <strong>Rolloutwithme1</strong></p>
-        
-        <button class="btn" id="magicButton">Click for Magic!</button>
-    </div>
+        <h1>Friendship Test! 🌸</h1>
+        <p>Fill this out and it will be sent directly to me.</p>
 
-    <script>
-        const button = document.getElementById('magicButton');
-        
-        button.onclick = function() {
-            // This shows a popup alert
-            alert("Congratulations, Rolloutwithme1! You've mastered HTML, CSS, and GitHub!");
+        <form action="https://formspree.io/f/mjgakbzq" method="POST">
             
-            // This changes the background color randomly
-            const colors = ['#FFADAD', '#FFD6A5', '#FDFFB6', '#CAFFBF', '#9BF6FF', '#A0C4FF', '#BDB2FF', '#FFC6FF'];
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            document.body.style.backgroundColor = randomColor;
-        };
-    </script>
+            <label>Your Name:</label>
+            <input type="text" name="name" placeholder="Enter your name" required>
+
+            <label>What makes us good friends?</label>
+            <textarea name="answer" rows="4" placeholder="Type your answer here..." required></textarea>
+
+            <button type="submit">Send to Rolloutwithme1</button>
+        </form>
+    </div>
 
 </body>
 </html>
