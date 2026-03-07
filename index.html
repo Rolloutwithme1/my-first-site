@@ -1,101 +1,120 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>LIDAR_SCAN | Rolloutwithme1</title>
+    <title>NEURAL_CORE | Rolloutwithme1</title>
     <style>
-        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; }
+        body { margin: 0; background: #050505; overflow: hidden; font-family: 'Orbitron', sans-serif; }
         canvas { display: block; }
-        .hud {
+        .interface {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; border: 2px solid rgba(0, 255, 204, 0.2);
-            box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; padding: 20px;
+            pointer-events: none; border: 2px solid #ff005533; box-sizing: border-box;
         }
-        .stats { color: #00ffcc; font-size: 14px; text-shadow: 0 0 5px #00ffcc; }
-        .form-area {
+        .core-text {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(0, 20, 20, 0.7); border: 1px solid #00ffcc;
-            padding: 30px; border-radius: 10px; pointer-events: auto;
-            text-align: center; color: #00ffcc; backdrop-filter: blur(10px);
+            color: #ff0055; text-align: center; pointer-events: auto;
+            background: rgba(0,0,0,0.8); padding: 30px; border: 1px solid #ff0055;
+            box-shadow: 0 0 50px #ff005544; border-radius: 50%; width: 200px; height: 200px;
+            display: flex; flex-direction: column; justify-content: center;
         }
-        input { background: transparent; border: 1px solid #00ffcc; color: #00ffcc; padding: 10px; margin: 10px 0; width: 200px; outline: none; }
-        button { background: #00ffcc; color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { box-shadow: 0 0 20px #00ffcc; }
+        input { background: #111; border: 1px solid #ff0055; color: #ff0055; margin: 5px 0; padding: 5px; width: 100%; box-sizing: border-box; }
+        button { background: #ff0055; color: white; border: none; padding: 10px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <canvas id="starfield"></canvas>
-
-    <div class="hud">
-        <div class="stats">
-            [ COORDINATES: 40.7128° N, 74.0060° W ]<br>
-            [ DEPTH_MAP: ACTIVE ]<br>
-            [ CONNECTION: SECURE_SSL ]
-        </div>
-        <div class="stats" style="text-align: right;">
-            SYSTEM_UPTIME: 99.9%<br>
-            BATTERY: [||||||||--] 82%
-        </div>
+    <div class="interface">
+        <div style="padding: 20px; color: #ff0055;">> CORE_TEMP: STABLE<br>> NEURAL_LINK: ACTIVE</div>
     </div>
 
-    <div class="form-area">
-        <h3>ACCESS TERMINAL</h3>
+    <div class="core-text">
+        <small>SYSTEM CORE</small>
         <form action="https://formspree.io/f/mjgakbzq" method="POST">
-            <input type="text" name="user" placeholder="ENGINEER_NAME" required><br>
-            <input type="text" name="data" placeholder="UPLOAD_LOG" required><br>
-            <button type="submit">INITIATE UPLOAD</button>
+            <input type="text" name="cmd" placeholder="SYNC_ID" required>
+            <button type="submit">STABILIZE</button>
         </form>
     </div>
 
+    <canvas id="canvas"></canvas>
+
     <script>
-        const canvas = document.getElementById('starfield');
+        const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        let stars = [];
-        let numStars = 600;
-        let speed = 2;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let atoms = [];
+        const mouse = { x: null, y: null };
+
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+
+        class Atom {
+            constructor(x, y) {
+                this.x = x; this.y = y;
+                this.radius = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 4 - 2;
+                this.speedY = Math.random() * 4 - 2;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#ff0055';
+                ctx.fill();
+            }
+        }
 
         function init() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            stars = [];
-            for (let i = 0; i < numStars; i++) {
-                stars.push({
-                    x: Math.random() * canvas.width - canvas.width / 2,
-                    y: Math.random() * canvas.height - canvas.height / 2,
-                    z: Math.random() * canvas.width,
-                    o: Math.random()
-                });
+            for (let i = 0; i < 100; i++) {
+                atoms.push(new Atom(Math.random() * canvas.width, Math.random() * canvas.height));
             }
         }
 
-        function draw() {
-            ctx.fillStyle = "black";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.translate(canvas.width / 2, canvas.height / 2);
+        function connect() {
+            for (let i = 0; i < atoms.length; i++) {
+                for (let j = i; j < atoms.length; j++) {
+                    const dx = atoms[i].x - atoms[j].x;
+                    const dy = atoms[i].y - atoms[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
 
-            for (let i = 0; i < numStars; i++) {
-                let s = stars[i];
-                let x = s.x / (s.z / canvas.width);
-                let y = s.y / (s.z / canvas.width);
-                let size = (1 - s.z / canvas.width) * 3;
-
-                if (x < -canvas.width / 2 || x > canvas.width / 2 || y < -canvas.height / 2 || y > canvas.height / 2) {
-                    s.z = canvas.width;
-                } else {
-                    s.z -= speed;
+                    if (distance < 150) {
+                        ctx.strokeStyle = `rgba(255, 0, 85, ${1 - distance/150})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(atoms[i].x, atoms[i].y);
+                        ctx.lineTo(atoms[j].x, atoms[j].y);
+                        ctx.stroke();
+                    }
+                }
+                // Connect to mouse
+                const mdx = atoms[i].x - mouse.x;
+                const mdy = atoms[i].y - mouse.y;
+                const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
+                if (mDist < 250) {
+                    ctx.strokeStyle = '#ff0055';
+                    ctx.lineWidth = 2;
                     ctx.beginPath();
-                    ctx.fillStyle = "#00ffcc";
-                    ctx.arc(x, y, size, 0, Math.PI * 2);
-                    ctx.fill();
+                    ctx.moveTo(atoms[i].x, atoms[i].y);
+                    ctx.lineTo(mouse.x, mouse.y);
+                    ctx.stroke();
                 }
             }
-            ctx.translate(-canvas.width / 2, -canvas.height / 2);
-            requestAnimationFrame(draw);
         }
 
-        window.addEventListener('resize', init);
+        function animate() {
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.2)'; // Motion blur effect
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            atoms.forEach(atom => { atom.update(); atom.draw(); });
+            connect();
+            requestAnimationFrame(animate);
+        }
+
         init();
-        draw();
+        animate();
     </script>
 </body>
-</html>V
+</html>
