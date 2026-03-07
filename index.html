@@ -1,110 +1,82 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>SWARM_AI | Rolloutwithme1</title>
+    <title>CRITICAL_OVERLOAD | Rolloutwithme1</title>
     <style>
-        body { margin: 0; background: #00050a; overflow: hidden; font-family: 'Courier New', monospace; }
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; }
         canvas { display: block; }
-        .hud-top {
-            position: absolute; top: 20px; width: 100%; display: flex;
-            justify-content: space-around; color: #ffcc00; pointer-events: none;
-            text-shadow: 0 0 8px #ffcc00; font-size: 12px;
+        
+        .alert-box {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(255, 0, 0, 0.1); border: 2px solid #ff0000;
+            padding: 40px; color: #ff0000; text-align: center;
+            box-shadow: 0 0 50px rgba(255,0,0,0.5); pointer-events: auto;
+            backdrop-filter: blur(10px); z-index: 10;
         }
-        .drone-count { border: 1px solid #ffcc00; padding: 5px 15px; background: rgba(255, 204, 0, 0.1); }
-        .cmd-panel {
-            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(0, 5, 10, 0.9); border: 1px solid #ffcc00;
-            padding: 20px; color: #ffcc00; pointer-events: auto; width: 300px;
+        
+        .glitch-text { font-size: 24px; font-weight: bold; text-transform: uppercase; animation: shake 0.1s infinite; }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px); }
+            50% { transform: translate(-1px, -2px); }
+            100% { transform: translate(1px, 1px); }
         }
-        button { background: #ffcc00; color: #000; border: none; padding: 10px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+
+        .input-line { background: transparent; border: 1px solid #ff0000; color: #ff0000; padding: 10px; width: 100%; margin-top: 20px; outline: none; }
+        button { background: #ff0000; color: #000; border: none; padding: 10px 30px; margin-top: 10px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="hud-top">
-        <div class="drone-count">DRONES_ACTIVE: 100</div>
-        <div class="drone-count">MODE: AUTONOMOUS_FLOCKING</div>
-        <div class="drone-count">SIGNAL: 100%</div>
-    </div>
-
-    <div class="cmd-panel">
-        <p>> TRANSMIT SWARM COMMAND</p>
+    <div class="alert-box">
+        <div class="glitch-text">!! SYSTEM CRITICAL !!</div>
+        <p>UNAUTHORIZED ACCESS DETECTED</p>
         <form action="https://formspree.io/f/mjgakbzq" method="POST">
-            <input type="text" name="cmd" placeholder="ENTER_MISSION_CODE" style="width:100%; background:black; border:1px solid #ffcc00; color:#ffcc00; padding:8px; box-sizing:border-box;">
-            <button type="submit">UPLOAD_TO_SWARM</button>
+            <input type="text" name="bypass" class="input-line" placeholder="ENTER BYPASS CODE" required><br>
+            <button type="submit">EMERGENCY UPLOAD</button>
         </form>
     </div>
 
-    <canvas id="swarmCanvas"></canvas>
+    <canvas id="glitchCanvas"></canvas>
 
     <script>
-        const canvas = document.getElementById('swarmCanvas');
+        const canvas = document.getElementById('glitchCanvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        const drones = [];
-        const mouse = { x: canvas.width/2, y: canvas.height/2 };
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@%&*";
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = [];
 
-        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+        for (let i = 0; i < columns; i++) drops[i] = 1;
 
-        class Drone {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.vx = Math.random() * 2 - 1;
-                this.vy = Math.random() * 2 - 1;
-                this.accel = 0.05;
-            }
-            update() {
-                // Steering logic toward mouse
-                let dx = mouse.x - this.x;
-                let dy = mouse.y - this.y;
-                let dist = Math.sqrt(dx*dx + dy*dy);
-                
-                if (dist > 5) {
-                    this.vx += (dx / dist) * this.accel;
-                    this.vy += (dy / dist) * this.accel;
-                }
-
-                // Friction (limits speed)
-                this.vx *= 0.98;
-                this.vy *= 0.98;
-
-                this.x += this.vx;
-                this.y += this.vy;
-
-                // Wrap screen
-                if (this.x < 0) this.x = canvas.width;
-                if (this.x > canvas.width) this.x = 0;
-                if (this.y < 0) this.y = canvas.height;
-                if (this.y > canvas.height) this.y = 0;
-            }
-            draw() {
-                let angle = Math.atan2(this.vy, this.vx);
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(angle);
-                ctx.beginPath();
-                ctx.moveTo(10, 0);
-                ctx.lineTo(-5, 5);
-                ctx.lineTo(-5, -5);
-                ctx.closePath();
-                ctx.fillStyle = "#ffcc00";
-                ctx.fill();
-                ctx.restore();
-            }
-        }
-
-        for(let i=0; i<100; i++) drones.push(new Drone());
-
-        function animate() {
-            ctx.fillStyle = 'rgba(0, 5, 10, 0.2)';
+        function draw() {
+            // Fade effect for trails
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            drones.forEach(d => { d.update(); d.draw(); });
-            requestAnimationFrame(animate);
+
+            // Randomly switch between Green and Red for a "glitch" look
+            ctx.fillStyle = Math.random() > 0.95 ? "#ff0000" : "#00ff00";
+            ctx.font = fontSize + "px monospace";
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters.charAt(Math.floor(Math.random() * letters.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
         }
-        animate();
+
+        setInterval(draw, 33);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
     </script>
 </body>
 </html>
