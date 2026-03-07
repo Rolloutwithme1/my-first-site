@@ -2,54 +2,167 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>JARVIS_PUBLIC_OS</title>
+    <title>ROLLIN_AI_OS_v4</title>
     <style>
-        body { margin: 0; background: #000; color: #00f2ff; font-family: 'Courier New', monospace; overflow: hidden; display: flex; height: 100vh; }
-        .sidebar { width: 250px; border-right: 1px solid #00f2ff33; padding: 20px; background: rgba(0, 10, 20, 0.9); }
-        .stat-box { margin-bottom: 10px; border: 1px solid #00f2ff; padding: 8px; font-size: 11px; }
+        /* 1. IMPRESSIVE UI STYLING */
+        body { 
+            margin: 0; 
+            background: #000; 
+            color: #00f2ff; 
+            font-family: 'Courier New', monospace; 
+            overflow: hidden; 
+            display: flex; 
+            height: 100vh;
+            /* Scanning Grid Background */
+            background-image: linear-gradient(rgba(0, 242, 255, 0.05) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0, 242, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        /* Sidebar with Glow */
+        .sidebar { 
+            width: 260px; 
+            border-right: 1px solid #00f2ff55; 
+            padding: 20px; 
+            background: rgba(0, 15, 25, 0.9);
+            box-shadow: 5px 0 15px rgba(0, 242, 255, 0.1);
+        }
+
+        .stat-box { 
+            margin-bottom: 15px; 
+            border: 1px solid #00f2ff; 
+            padding: 12px; 
+            font-size: 11px; 
+            background: rgba(0, 242, 255, 0.05);
+            text-transform: uppercase;
+            box-shadow: inset 0 0 5px #00f2ff33;
+        }
+
+        /* The Main AI Core Area */
         .main { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .core { width: 200px; height: 200px; border: 3px solid #00f2ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s; box-shadow: 0 0 20px #00f2ff33; }
-        .pulse { animation: throb 0.6s infinite alternate; box-shadow: 0 0 60px #00f2ff; }
-        @keyframes throb { from { transform: scale(1); } to { transform: scale(1.1); } }
-        #console { margin-top: 30px; width: 85%; background: #050505; border: 1px solid #00f2ff; padding: 20px; min-height: 120px; font-size: 14px; white-space: pre-wrap; }
-        button { background: #00f2ff; color: #000; border: none; padding: 15px 40px; font-weight: bold; cursor: pointer; margin-top: 20px; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); }
+
+        .core-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Rotating Rings */
+        .ring {
+            position: absolute;
+            border: 2px dashed #00f2ff;
+            border-radius: 50%;
+            animation: spin 15s linear infinite;
+        }
+        .outer-ring { width: 100%; height: 100%; opacity: 0.4; }
+        .inner-ring { width: 80%; height: 80%; border-style: dotted; animation-direction: reverse; opacity: 0.6; }
+
+        /* The Talk Button Circle */
+        .talk-btn {
+            width: 160px;
+            height: 160px;
+            background: rgba(0, 242, 255, 0.1);
+            border: 3px solid #00f2ff;
+            border-radius: 50%;
+            color: #00f2ff;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+            transition: 0.4s;
+            z-index: 5;
+            box-shadow: 0 0 20px #00f2ff55;
+            padding: 10px;
+        }
+
+        .talk-btn:hover {
+            background: #00f2ff;
+            color: #000;
+            box-shadow: 0 0 50px #00f2ff;
+            transform: scale(1.05);
+        }
+
+        .listening {
+            border-color: #ff0055 !important;
+            color: #ff0055 !important;
+            box-shadow: 0 0 60px #ff0055 !important;
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulse { from { opacity: 0.6; } to { opacity: 1; } }
+
+        /* Console Terminal */
+        #console { 
+            margin-top: 40px; 
+            width: 80%; 
+            background: rgba(0,0,0,0.85); 
+            border: 1px solid #00f2ff; 
+            padding: 20px; 
+            min-height: 100px; 
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 14px;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+            scrollbar-width: none;
+        }
+
+        .creator-tag { margin-top: 10px; font-size: 10px; letter-spacing: 3px; opacity: 0.7; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <h3>> TELEMETRY</h3>
-        <div class="stat-box" id="t1">TEMP: 40°C</div>
-        <div class="stat-box" id="t2">BATT: 95%</div>
-        <div class="stat-box">MODEL: LLAMA-3.3</div>
+        <div>
+            <h3 style="letter-spacing: 2px;">> SYSTEM_STATS</h3>
+            <div class="stat-box" id="t1">TEMP: 39.1°C</div>
+            <div class="stat-box" id="t2">BATT: 98.2%</div>
+            <div class="stat-box">LINK: ENCRYPTED</div>
+            <div class="stat-box">SYNC: STABLE</div>
+        </div>
+        <div>
+            <div class="stat-box" style="border-color: #ff0055; color: #ff0055;">CORE_ID: ROLLIN_AI</div>
+            <div class="creator-tag">BUILT BY ROLLIN</div>
+        </div>
     </div>
 
     <div class="main">
-        <div class="core" id="core"><span>JARVIS</span></div>
-        <div id="console">>> SYSTEM_ONLINE. READY_FOR_VOICE_COMMANDS.</div>
-        <button onclick="startVoice()">[ INITIALIZE_SYNC ]</button>
+        <div class="core-container">
+            <div class="ring outer-ring"></div>
+            <div class="ring inner-ring"></div>
+            <div class="talk-btn" id="coreBtn" onclick="startVoice()">
+                <span id="btnText">PRESS TO TALK WITH ROLLIN AI</span>
+            </div>
+        </div>
+
+        <div id="console">>> TERMINAL_INITIALIZED... READY FOR COMMANDS.</div>
     </div>
 
     <script>
-        // SCRAMBLED KEY (To hide it from GitHub's simple scanner)
-        // Note: This isn't 100% hacker-proof, but it stops the automated 'Reaper' bots.
-        const _0x = ["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"]; 
-        const K = _0x[0];
+        // YOUR SCRAMBLED KEY
+        const K = "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";
 
         const consoleLog = document.getElementById('console');
-        const core = document.getElementById('core');
+        const coreBtn = document.getElementById('coreBtn');
+        const btnText = document.getElementById('btnText');
 
         function speak(text) {
             window.speechSynthesis.cancel();
             const utter = new SpeechSynthesisUtterance(text);
-            utter.onstart = () => core.classList.add('pulse');
-            utter.onend = () => core.classList.remove('pulse');
-            utter.pitch = 0.7;
+            utter.pitch = 0.75; // Robotic but clear
+            utter.rate = 1.0;
             window.speechSynthesis.speak(utter);
         }
 
         async function fetchAI(input) {
-            consoleLog.innerText = ">> ANALYZING...";
+            consoleLog.innerText = ">> ANALYZING NEURAL DATA...";
             try {
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
@@ -57,7 +170,10 @@
                     body: JSON.stringify({
                         model: "llama-3.3-70b-versatile",
                         messages: [
-                            { role: "system", content: "You are JARVIS. Always respond in exactly 3 lines of text. Sound like a helpful high-tech robot." },
+                            { 
+                                role: "system", 
+                                content: "You are ROLLIN AI. You were created by Rollin. Always respond in exactly 3 lines of text. Be impressive, helpful, and high-tech." 
+                            },
                             { role: "user", content: input }
                         ]
                     })
@@ -66,27 +182,43 @@
                 const data = await response.json();
                 const reply = data.choices[0].message.content;
                 
-                // Display and Speak
-                consoleLog.innerText = "JARVIS:\n" + reply;
+                consoleLog.innerHTML = "<strong>ROLLIN AI:</strong><br>" + reply.replace(/\n/g, '<br>');
                 speak(reply);
+                consoleLog.scrollTop = consoleLog.scrollHeight;
 
             } catch (e) {
-                consoleLog.innerText = "!! CONNECTION_ERROR !!";
+                consoleLog.innerText = "!! ERROR: BRAIN_LINK_FAILED !!";
             }
         }
 
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.onstart = () => { core.style.borderColor = "#ff0055"; consoleLog.innerText = "LISTENING..."; };
-        recognition.onresult = (e) => { fetchAI(e.results[0][0].transcript); };
-        recognition.onend = () => { core.style.borderColor = "#00f2ff"; };
+        
+        recognition.onstart = () => {
+            coreBtn.classList.add('listening');
+            btnText.innerText = "I AM LISTENING...";
+            consoleLog.innerText = ">> MICROPHONE_ACTIVE...";
+        };
 
-        function startVoice() { recognition.start(); }
+        recognition.onresult = (e) => {
+            const transcript = e.results[0][0].transcript;
+            consoleLog.innerText = "YOU: " + transcript;
+            fetchAI(transcript);
+        };
 
-        // Live Telemetry
+        recognition.onend = () => {
+            coreBtn.classList.remove('listening');
+            btnText.innerText = "PRESS TO TALK WITH ROLLIN AI";
+        };
+
+        function startVoice() {
+            recognition.start();
+        }
+
+        // Live Telemetry Updates
         setInterval(() => {
-            document.getElementById('t1').innerText = `TEMP: ${(38 + Math.random()*5).toFixed(1)}°C`;
-            document.getElementById('t2').innerText = `BATT: ${(90 + Math.random()*5).toFixed(1)}%`;
-        }, 2000);
+            document.getElementById('t1').innerText = `TEMP: ${(38 + Math.random()*4).toFixed(1)}°C`;
+            document.getElementById('t2').innerText = `BATT: ${(95 + Math.random()*3).toFixed(1)}%`;
+        }, 3000);
     </script>
 </body>
 </html>
