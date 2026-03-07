@@ -1,120 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>NEURAL_CORE | Rolloutwithme1</title>
+    <meta charset="UTF-8">
+    <title>EYE_OF_THE_MACHINE | Rolloutwithme1</title>
     <style>
-        body { margin: 0; background: #050505; overflow: hidden; font-family: 'Orbitron', sans-serif; }
-        canvas { display: block; }
-        .interface {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; border: 2px solid #ff005533; box-sizing: border-box;
-        }
-        .core-text {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            color: #ff0055; text-align: center; pointer-events: auto;
-            background: rgba(0,0,0,0.8); padding: 30px; border: 1px solid #ff0055;
-            box-shadow: 0 0 50px #ff005544; border-radius: 50%; width: 200px; height: 200px;
-            display: flex; flex-direction: column; justify-content: center;
-        }
-        input { background: #111; border: 1px solid #ff0055; color: #ff0055; margin: 5px 0; padding: 5px; width: 100%; box-sizing: border-box; }
-        button { background: #ff0055; color: white; border: none; padding: 10px; cursor: pointer; font-weight: bold; }
+        body { margin: 0; background: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Courier New', monospace; }
+        
+        .eye-container { position: relative; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, #222, #000); border: 4px solid #00f2ff; box-shadow: 0 0 50px #00f2ff55; }
+        
+        .pupil { position: absolute; width: 80px; height: 80px; background: #00f2ff; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 30px #00f2ff, inset 0 0 20px #ffffff; }
+
+        .iris { position: absolute; width: 150px; height: 150px; border: 2px dashed #00f2ff; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: spin 10s linear infinite; }
+
+        @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        .hud-text { position: absolute; color: #00f2ff; font-size: 12px; width: 100%; text-align: center; bottom: -60px; text-shadow: 0 0 5px #00f2ff; }
+
+        .form-overlay { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.8); border: 1px solid #00f2ff; padding: 15px; border-radius: 5px; color: #00f2ff; }
+        input { background: #111; border: 1px solid #00f2ff; color: #00f2ff; width: 150px; padding: 5px; margin-bottom: 10px; }
+        button { background: #00f2ff; color: #000; border: none; padding: 8px; width: 100%; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="interface">
-        <div style="padding: 20px; color: #ff0055;">> CORE_TEMP: STABLE<br>> NEURAL_LINK: ACTIVE</div>
-    </div>
-
-    <div class="core-text">
-        <small>SYSTEM CORE</small>
+    <div class="form-overlay">
         <form action="https://formspree.io/f/mjgakbzq" method="POST">
-            <input type="text" name="cmd" placeholder="SYNC_ID" required>
-            <button type="submit">STABILIZE</button>
+            <input type="text" name="id" placeholder="LINK_USER" required><br>
+            <button type="submit">STABILIZE_EYE</button>
         </form>
     </div>
 
-    <canvas id="canvas"></canvas>
+    <div class="eye-container">
+        <div class="iris"></div>
+        <div class="pupil" id="pupil"></div>
+        <div class="hud-text">
+            TARGET_ACQUIRED: <span id="coords">X:0 Y:0</span><br>
+            SYSTEM_STATUS: SCANNING...
+        </div>
+    </div>
 
     <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        const pupil = document.getElementById('pupil');
+        const coords = document.getElementById('coords');
 
-        let atoms = [];
-        const mouse = { x: null, y: null };
+        document.addEventListener('mousemove', (e) => {
+            // Get eye center
+            const x = window.innerWidth / 2;
+            const y = window.innerHeight / 2;
 
-        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+            // Calculate angle between mouse and eye center
+            const rad = Math.atan2(e.pageX - x, e.pageY - y);
+            const rot = (rad * (180 / Math.PI) * -1) + 180;
 
-        class Atom {
-            constructor(x, y) {
-                this.x = x; this.y = y;
-                this.radius = Math.random() * 2 + 1;
-                this.speedX = Math.random() * 4 - 2;
-                this.speedY = Math.random() * 4 - 2;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
-                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = '#ff0055';
-                ctx.fill();
-            }
-        }
+            // Move the pupil slightly toward the mouse (Trigonometry)
+            const distance = 40; // Max move distance
+            const moveX = Math.sin(rad) * distance;
+            const moveY = Math.cos(rad) * distance;
 
-        function init() {
-            for (let i = 0; i < 100; i++) {
-                atoms.push(new Atom(Math.random() * canvas.width, Math.random() * canvas.height));
-            }
-        }
-
-        function connect() {
-            for (let i = 0; i < atoms.length; i++) {
-                for (let j = i; j < atoms.length; j++) {
-                    const dx = atoms[i].x - atoms[j].x;
-                    const dy = atoms[i].y - atoms[j].y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < 150) {
-                        ctx.strokeStyle = `rgba(255, 0, 85, ${1 - distance/150})`;
-                        ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.moveTo(atoms[i].x, atoms[i].y);
-                        ctx.lineTo(atoms[j].x, atoms[j].y);
-                        ctx.stroke();
-                    }
-                }
-                // Connect to mouse
-                const mdx = atoms[i].x - mouse.x;
-                const mdy = atoms[i].y - mouse.y;
-                const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
-                if (mDist < 250) {
-                    ctx.strokeStyle = '#ff0055';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.moveTo(atoms[i].x, atoms[i].y);
-                    ctx.lineTo(mouse.x, mouse.y);
-                    ctx.stroke();
-                }
-            }
-        }
-
-        function animate() {
-            ctx.fillStyle = 'rgba(5, 5, 5, 0.2)'; // Motion blur effect
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            atoms.forEach(atom => { atom.update(); atom.draw(); });
-            connect();
-            requestAnimationFrame(animate);
-        }
-
-        init();
-        animate();
+            pupil.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
+            coords.innerText = `X:${e.pageX} Y:${e.pageY}`;
+        });
     </script>
 </body>
 </html>
