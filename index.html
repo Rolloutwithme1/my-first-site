@@ -1,65 +1,123 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>EYE_OF_THE_MACHINE | Rolloutwithme1</title>
+    <title>HOLO_CORE | Rolloutwithme1</title>
     <style>
-        body { margin: 0; background: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Courier New', monospace; }
-        
-        .eye-container { position: relative; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, #222, #000); border: 4px solid #00f2ff; box-shadow: 0 0 50px #00f2ff55; }
-        
-        .pupil { position: absolute; width: 80px; height: 80px; background: #00f2ff; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 30px #00f2ff, inset 0 0 20px #ffffff; }
-
-        .iris { position: absolute; width: 150px; height: 150px; border: 2px dashed #00f2ff; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: spin 10s linear infinite; }
-
-        @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
-
-        .hud-text { position: absolute; color: #00f2ff; font-size: 12px; width: 100%; text-align: center; bottom: -60px; text-shadow: 0 0 5px #00f2ff; }
-
-        .form-overlay { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.8); border: 1px solid #00f2ff; padding: 15px; border-radius: 5px; color: #00f2ff; }
-        input { background: #111; border: 1px solid #00f2ff; color: #00f2ff; width: 150px; padding: 5px; margin-bottom: 10px; }
-        button { background: #00f2ff; color: #000; border: none; padding: 8px; width: 100%; font-weight: bold; cursor: pointer; }
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; }
+        canvas { display: block; }
+        .ui-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; border: 2px solid rgba(0, 255, 255, 0.2); box-sizing: border-box;
+        }
+        .data-panel {
+            position: absolute; top: 40px; left: 40px; color: #00ffff;
+            background: rgba(0, 40, 40, 0.5); padding: 15px; border-left: 5px solid #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        .upload-box {
+            position: absolute; bottom: 40px; right: 40px;
+            background: rgba(0, 0, 0, 0.8); border: 1px solid #00ffff;
+            padding: 20px; pointer-events: auto;
+        }
+        input { background: #000; border: 1px solid #00ffff; color: #00ffff; padding: 10px; width: 200px; margin-bottom: 10px; }
+        button { background: #00ffff; color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; width: 100%; }
     </style>
 </head>
 <body>
 
-    <div class="form-overlay">
-        <form action="https://formspree.io/f/mjgakbzq" method="POST">
-            <input type="text" name="id" placeholder="LINK_USER" required><br>
-            <button type="submit">STABILIZE_EYE</button>
-        </form>
-    </div>
-
-    <div class="eye-container">
-        <div class="iris"></div>
-        <div class="pupil" id="pupil"></div>
-        <div class="hud-text">
-            TARGET_ACQUIRED: <span id="coords">X:0 Y:0</span><br>
-            SYSTEM_STATUS: SCANNING...
+    <div class="ui-overlay">
+        <div class="data-panel">
+            >> OBJECT: 3D_HEX_CORE<br>
+            >> ROTATION: ACTIVE<br>
+            >> STATUS: STABLE
         </div>
     </div>
 
+    <div class="upload-box">
+        <form action="https://formspree.io/f/mjgakbzq" method="POST">
+            <input type="text" name="user" placeholder="PILOT_ID" required><br>
+            <button type="submit">TRANSMIT_SYNC</button>
+        </form>
+    </div>
+
+    <canvas id="hologram"></canvas>
+
     <script>
-        const pupil = document.getElementById('pupil');
-        const coords = document.getElementById('coords');
+        const canvas = document.getElementById('hologram');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-        document.addEventListener('mousemove', (e) => {
-            // Get eye center
-            const x = window.innerWidth / 2;
-            const y = window.innerHeight / 2;
+        let points = [];
+        let numPoints = 400;
+        let angleX = 0;
+        let angleY = 0;
 
-            // Calculate angle between mouse and eye center
-            const rad = Math.atan2(e.pageX - x, e.pageY - y);
-            const rot = (rad * (180 / Math.PI) * -1) + 180;
+        // Create a 3D Sphere of points
+        for (let i = 0; i < numPoints; i++) {
+            let theta = Math.acos(Math.random() * 2 - 1);
+            let phi = Math.random() * Math.PI * 2;
+            points.push({
+                x: 200 * Math.sin(theta) * Math.cos(phi),
+                y: 200 * Math.sin(theta) * Math.sin(phi),
+                z: 200 * Math.cos(theta)
+            });
+        }
 
-            // Move the pupil slightly toward the mouse (Trigonometry)
-            const distance = 40; // Max move distance
-            const moveX = Math.sin(rad) * distance;
-            const moveY = Math.cos(rad) * distance;
+        function project(x, y, z) {
+            let perspective = 600 / (600 + z);
+            return {
+                x: x * perspective + canvas.width / 2,
+                y: y * perspective + canvas.height / 2,
+                p: perspective
+            };
+        }
 
-            pupil.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
-            coords.innerText = `X:${e.pageX} Y:${e.pageY}`;
+        function rotate(p, ax, ay) {
+            // Rotate Y
+            let x = p.x * Math.cos(ay) + p.z * Math.sin(ay);
+            let z = p.z * Math.cos(ay) - p.x * Math.sin(ay);
+            // Rotate X
+            let y = p.y * Math.cos(ax) - z * Math.sin(ax);
+            z = z * Math.cos(ax) + p.y * Math.sin(ax);
+            return { x, y, z };
+        }
+
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            angleX += 0.01;
+            angleY += 0.01;
+
+            points.forEach(p => {
+                let r = rotate(p, angleX, angleY);
+                let proj = project(r.x, r.y, r.z);
+
+                ctx.fillStyle = `rgba(0, 255, 255, ${proj.p})`;
+                ctx.beginPath();
+                ctx.arc(proj.x, proj.y, proj.p * 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Add a digital "glitch" line occasionally
+                if (Math.random() > 0.99) {
+                    ctx.strokeStyle = 'rgba(0, 255, 255, 0.2)';
+                    ctx.beginPath();
+                    ctx.moveTo(proj.x, proj.y);
+                    ctx.lineTo(canvas.width / 2, canvas.height / 2);
+                    ctx.stroke();
+                }
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            angleY = (e.clientX / canvas.width - 0.5) * 4;
+            angleX = (e.clientY / canvas.height - 0.5) * 4;
         });
+
+        draw();
     </script>
 </body>
 </html>
