@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My First Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rolloutwithme1 | My Website</title>
     <style>
+        /* This is CSS - It makes the site look pretty */
         body { 
             background-color: #e0f7fa; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -12,33 +15,71 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
+            transition: background-color 0.5s ease; /* Makes color change smooth */
         }
+
         .card {
             background: white;
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             text-align: center;
+            max-width: 400px;
         }
-        h1 { color: #00796b; }
-        p { color: #555; }
+
+        h1 { 
+            color: #00796b; 
+            margin-top: 0;
+        }
+
+        p { 
+            color: #555; 
+            line-height: 1.6;
+        }
+
         .btn {
             background-color: #00796b;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 24px;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 30px;
             display: inline-block;
             margin-top: 20px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: scale(1.1); /* Makes button grow slightly when touched */
+            background-color: #004d40;
         }
     </style>
 </head>
 <body>
+
     <div class="card">
         <h1>🚀 It's Working!</h1>
-        <p>This website is hosted for free on GitHub Pages.</p>
-        <p>Created by Rolloutwithme1</p>
-        <a href="#" class="btn">Click Me!</a>
+        <p>This website is hosted for free on <strong>GitHub Pages</strong>.</p>
+        <p>Created by <strong>Rolloutwithme1</strong></p>
+        
+        <button class="btn" id="magicButton">Click for Magic!</button>
     </div>
+
+    <script>
+        const button = document.getElementById('magicButton');
+        
+        button.onclick = function() {
+            // This shows a popup alert
+            alert("Congratulations, Rolloutwithme1! You've mastered HTML, CSS, and GitHub!");
+            
+            // This changes the background color randomly
+            const colors = ['#FFADAD', '#FFD6A5', '#FDFFB6', '#CAFFBF', '#9BF6FF', '#A0C4FF', '#BDB2FF', '#FFC6FF'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            document.body.style.backgroundColor = randomColor;
+        };
+    </script>
+
 </body>
 </html>
