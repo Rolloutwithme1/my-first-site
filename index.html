@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON COMMANDER: FIXED IMAGES</title>
+    <title>NEON COMMANDER: EMOJI AUTO-WIN</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         :root { --blue: #00f2ff; --pink: #ff00ea; --bg: #050505; --card: #121212; --green: #00ff88; --red: #ff4d4d; }
@@ -17,18 +17,14 @@
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; }
         .num-btn { padding: 15px 5px; background: #222; border: 1px solid var(--blue); color: white; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .num-btn.done { border-color: var(--pink); color: var(--pink); opacity: 0.4; pointer-events: none; }
-        
-        /* Rebus Image Styling */
-        .rebus-ui { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 20px 0; }
-        .icon-box { width: 110px; height: 110px; background: #222; border: 2px solid var(--pink); border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 10px; }
-        .icon-box svg { width: 80%; height: 80%; }
-        
+        .rebus-ui { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 20px 0; font-size: 5rem; }
+        .emoji-box { width: 110px; height: 110px; background: #1a1a1a; border: 2px solid var(--pink); border-radius: 15px; display: flex; align-items: center; justify-content: center; }
         .ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
         .ans-btn { padding: 15px; background: #1a1a1a; border: 1px solid #444; color: white; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; }
         .correct { background: var(--green) !important; color: black !important; }
         .wrong { background: var(--red) !important; }
         .btn-main { background: var(--blue); color: black; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; }
-        .btn-skip { background: #222; color: #777; padding: 8px; border: 1px solid #333; border-radius: 8px; width: 100%; cursor: pointer; font-family: 'Orbitron'; margin-top: 10px; font-size: 0.7rem; }
+        .btn-skip { background: #222; color: #777; padding: 8px; border: 1px solid #333; border-radius: 8px; width: 100%; cursor: pointer; margin-top: 10px; font-size: 0.7rem; }
     </style>
 </head>
 <body>
@@ -36,9 +32,9 @@
 <div class="container">
     <div id="home-screen">
         <h1 style="color: var(--blue);">NEON HUB</h1>
-        <div id="btn-lvl1" class="level-card unlocked" onclick="startLvl(1)">LVL 1: GK CHALLENGE</div>
+        <div id="btn-lvl1" class="level-card unlocked" onclick="startLvl(1)">LVL 1: GK EMOJI</div>
         <div id="btn-lvl2" class="level-card" onclick="startLvl(2)">LVL 2: JUMBLED</div>
-        <div id="btn-lvl3" class="level-card" onclick="startLvl(3)">LVL 3: REBUS (FIXED)</div>
+        <div id="btn-lvl3" class="level-card" onclick="startLvl(3)">LVL 3: EMOJI REBUS</div>
         <div id="btn-lvl4" class="level-card" onclick="startLvl(4)">LVL 4: MATH BOSS 🔥</div>
     </div>
 
@@ -48,12 +44,12 @@
             <h2 id="score-tracker">💎 0/7</h2>
         </div>
         <div class="grid" id="sector-grid"></div>
-        <button class="btn-skip" onclick="skipLevel()">⏩ SKIP LEVEL (NO BONUS)</button>
+        <button class="btn-skip" onclick="skipLevel()">⏩ SKIP LEVEL</button>
     </div>
 
     <div id="play-screen" class="hidden">
         <div class="timer-box"><div id="timer-fill"></div></div>
-        <h3 id="q-text" style="min-height:60px;"></h3>
+        <h3 id="q-text" style="min-height:50px;"></h3>
         <div id="game-area"></div>
         <div id="result-ui" class="hidden">
             <p id="feedback-text"></p>
@@ -62,56 +58,42 @@
     </div>
 
     <div id="summary-screen" class="hidden">
-        <h2 style="color: var(--green);">LEVEL COMPLETE!</h2>
+        <h2 style="color: var(--green);">MISSION SUCCESS!</h2>
         <p id="summary-msg" style="font-size: 1.4rem; margin: 25px 0;"></p>
-        <button class="btn-main" onclick="showHome()">BACK TO HUB</button>
+        <button class="btn-main" onclick="showHome()">RETURN TO HUB</button>
     </div>
 </div>
 
 <script>
     let currentLvl = 1, unlockedLvl = 1, score = 0, finishedSectors = [], timerInterval;
 
-    // These SVGs are literal drawings. Rain = drops, Bow = curve, etc.
-    const icons = {
-        rain: `<svg viewBox="0 0 24 24" fill="var(--blue)"><path d="M12 2C9.5 2 7.4 3.7 6.8 6H6c-2.2 0-4 1.8-4 4s1.8 4 4 4h12c2.2 0 4-1.8 4-4s-1.8-4-4-4h-.8c-.6-2.3-2.7-4-5.2-4zM9 16l-1 3m4-3l-1 3m4-3l-1 3"/></svg>`,
-        bow: `<svg viewBox="0 0 24 24" fill="var(--pink)" stroke="var(--pink)" stroke-width="2" fill="none"><path d="M4 12c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>`,
-        key: `<svg viewBox="0 0 24 24" fill="#FFD700"><path d="M7 18c-2.2 0-4-1.8-4-4s1.8-4 4-4c1.1 0 2.1.4 2.8 1.2L13 8l3 3-2 2 2 2-3 3-2.2-2.2c-.7.8-1.7 1.2-2.8 1.2z"/></svg>`,
-        board: `<svg viewBox="0 0 24 24" fill="#8B4513"><path d="M20 17H4V5h16v12zM2 5c0-1.1.9-2 2-2h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2h-7v2h3v2H8v-2h3v-2H4c-1.1 0-2-.9-2-2V5z"/></svg>`,
-        foot: `<svg viewBox="0 0 24 24" fill="#EEE"><path d="M11 2c-1.1 0-2 .9-2 2v8l-4-4-1.4 1.4L8.2 14c.4.4.9.6 1.4.6h4.8c.5 0 1-.2 1.4-.6l4.6-4.6L19 8l-4 4V4c0-1.1-.9-2-2-2h-2z"/></svg>`,
-        ball: `<svg viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="10" stroke="black" stroke-width="1"/><path d="M12 2a10 10 0 0 0-10 10m20 0a10 10 0 0 1-10 10" stroke="black" fill="none"/></svg>`,
-        fire: `<svg viewBox="0 0 24 24" fill="#FF4500"><path d="M12 2c0 0-4 4.5-4 8.5C8 12.5 9.8 14 12 14s4-1.5 4-3.5C16 6.5 12 2 12 2z"/><path d="M12 22c3.3 0 6-2.7 6-6 0-2.5-1.5-4.7-3.7-5.6.2.5.3 1.1.3 1.6 0 2.5-2 4.5-4.5 4.5S5.5 14.5 5.5 12c0-.5.1-1.1.3-1.6C3.5 11.3 2 13.5 2 16c0 3.3 2.7 6 6 6h4z"/></svg>`,
-        fly: `<svg viewBox="0 0 24 24" fill="#555"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.2-6.3-4.5-6.3 4.5 2.3-7.2-6-4.6h7.6L12 2z"/></svg>`,
-        pan: `<svg viewBox="0 0 24 24" fill="#555"><path d="M21 11H8.7c-.4-1.2-1.5-2-2.7-2-1.7 0-3 1.3-3 3s1.3 3 3 3c1.2 0 2.3-.8 2.7-2H21v-2z"/></svg>`,
-        cake: `<svg viewBox="0 0 24 24" fill="#F4A460"><path d="M12 3c-4.4 0-8 2-8 4.5V17c0 2.5 3.6 4.5 8 4.5s8-2 8-4.5V7.5c0-2.5-3.6-4.5-8-4.5z"/></svg>`
-    };
-
     const gameData = {
         1: [
-            { q: "Which planet is the 'Red Planet'?", a: [{t:"Mars", c:true}, {t:"Venus", c:false}] },
-            { q: "Capital of France?", a: [{t:"Paris", c:true}, {t:"Berlin", c:false}] },
-            { q: "Largest Ocean?", a: [{t:"Pacific", c:true}, {t:"Indian", c:false}] },
-            { q: "Legs on a Spider?", a: [{t:"8", c:true}, {t:"6", c:false}] },
-            { q: "Is the Sun a Star?", a: [{t:"Yes", c:true}, {t:"No", c:false}] },
-            { q: "Primary color?", a: [{t:"Blue", c:true}, {t:"Orange", c:false}] },
-            { q: "Boiling point of water?", a: [{t:"100°C", c:true}, {t:"50°C", c:false}] },
-            { q: "Fastest Land Animal?", a: [{t:"Cheetah", c:true}, {t:"Tiger", c:false}] },
-            { q: "Baby Dog name?", a: [{t:"Puppy", c:true}, {t:"Kitten", c:false}] },
-            { q: "Month with 28 days?", a: [{t:"February", c:true}, {t:"May", c:false}] }
+            { q: "Which planet is 🔴?", a: [{t:"Mars", c:true}, {t:"Earth", c:false}] },
+            { q: "Which animal says 🦁?", a: [{t:"Lion", c:true}, {t:"Cat", c:false}] },
+            { q: "What is 🍎 color?", a: [{t:"Red", c:true}, {t:"Blue", c:false}] },
+            { q: "Which is ❄️?", a: [{t:"Cold", c:true}, {t:"Hot", c:false}] },
+            { q: "Which is ☀️?", a: [{t:"Sun", c:true}, {t:"Moon", c:false}] },
+            { q: "Legs on a 🕷️?", a: [{t:"8", c:true}, {t:"4", c:false}] },
+            { q: "Water is 💧?", a: [{t:"Liquid", c:true}, {t:"Solid", c:false}] },
+            { q: "Kings wear 👑?", a: [{t:"Yes", c:true}, {t:"No", c:false}] },
+            { q: "A 🏁 means?", a: [{t:"Finish", c:true}, {t:"Start", c:false}] },
+            { q: "Is 🍯 sweet?", a: [{t:"Yes", c:true}, {t:"No", c:false}] }
         ],
         2: [ {q:"XOLBRO", ans:"ROBLOX"}, {q:"ZAPZI", ans:"PIZZA"}, {q:"SOTHG", ans:"GHOST"}, {q:"EPACS", ans:"SPACE"}, {q:"LPAPE", ans:"APPLE"}, {q:"RITEG", ans:"TIGER"}, {q:"ONEPH", ans:"PHONE"}, {q:"TEWRA", ans:"WATER"}, {q:"ECNAD", ans:"DANCE"}, {q:"CISUM", ans:"MUSIC"} ],
         3: [
-            {i1:"rain", i2:"bow", ans:"RAINBOW", opts:["RAINBOW", "STORM"]},
-            {i1:"key", i2:"board", ans:"KEYBOARD", opts:["KEYBOARD", "PIANO"]},
-            {i1:"foot", i2:"ball", ans:"FOOTBALL", opts:["FOOTBALL", "SOCCER"]},
-            {i1:"fire", i2:"fly", ans:"FIREFLY", opts:["FIREFLY", "LIGHT"]},
-            {i1:"pan", i2:"cake", ans:"PANCAKE", opts:["PANCAKE", "BREAD"]},
-            {i1:"rain", i2:"fall", ans:"RAINFALL", opts:["RAINFALL", "WIND"]}, // Fallback logic
-            {i1:"key", i2:"ball", ans:"KEYBALL", opts:["KEYBALL", "LOCK"]},
-            {i1:"fire", i2:"board", ans:"FIREBOARD", opts:["FIREBOARD", "DASH"]},
-            {i1:"foot", i2:"board", ans:"FOOTBOARD", opts:["FOOTBOARD", "STEP"]},
-            {i1:"rain", i2:"fly", ans:"RAINFLY", opts:["RAINFLY", "BUG"]}
+            {e1:"🌧️", e2:"🌈", ans:"RAINBOW", opts:["RAINBOW", "STORM"]},
+            {e1:"🔑", e2:"⌨️", ans:"KEYBOARD", opts:["KEYBOARD", "PIANO"]},
+            {e1:"🦶", e2:"⚽", ans:"FOOTBALL", opts:["FOOTBALL", "SOCCER"]},
+            {e1:"🔥", e2:"🪰", ans:"FIREFLY", opts:["FIREFLY", "LIGHT"]},
+            {e1:"🍳", e2:"🎂", ans:"PANCAKE", opts:["PANCAKE", "WAFFLE"]},
+            {e1:"🦷", e2:"🧴", ans:"TOOTHPASTE", opts:["TOOTHPASTE", "SOAP"]},
+            {e1:"☀️", e2:"🌻", ans:"SUNFLOWER", opts:["SUNFLOWER", "DAISY"]},
+            {e1:"❄️", e2:"☃️", ans:"SNOWMAN", opts:["SNOWMAN", "ICE"]},
+            {e1:"👂", e2:"💍", ans:"EARRING", opts:["EARRING", "JEWEL"]},
+            {e1:"🐈", e2:"🚶", ans:"CATWALK", opts:["CATWALK", "DOGRUN"]}
         ],
-        4: Array.from({length:10}, (_,i)=>({ q: `${(i+1)*5} + ${i*2}`, a: [{t:((i+1)*5)+(i*2)+"", c:true}, {t:"WRONG", c:false}] }))
+        4: Array.from({length:10}, (_,i)=>({ q: `Solve: ${(i+5)} + ${i+2}`, a: [{t:(i+5+i+2)+"", c:true}, {t:"Wrong", c:false}] }))
     };
 
     function startLvl(l) { 
@@ -139,8 +121,8 @@
         const data = gameData[currentLvl][idx];
 
         if(currentLvl === 3) {
-            document.getElementById('q-text').innerText = "COMBINE THE TWO:";
-            area.innerHTML = `<div class="rebus-ui"><div class="icon-box">${icons[data.i1]}</div><div style="font-size:2rem;color:var(--blue)">+</div><div class="icon-box">${icons[data.i2] || icons['ball']}</div></div>`;
+            document.getElementById('q-text').innerText = "COMBINE THE EMOJIS:";
+            area.innerHTML = `<div class="rebus-ui"><div class="emoji-box">${data.e1}</div><div style="font-size:2rem;color:var(--blue)">+</div><div class="emoji-box">${data.e2}</div></div>`;
             const g = document.createElement('div'); g.className = 'ans-grid';
             data.opts.forEach(t => {
                 const b = document.createElement('button'); b.className = 'ans-btn'; b.innerText = t; b.onclick = () => check(t===data.ans, b, idx); g.appendChild(b);
@@ -173,8 +155,15 @@
         if(idx !== -1 && !finishedSectors.includes(idx)) finishedSectors.push(idx);
         if(correct) { if(btn) btn.classList.add('correct'); score++; }
         else { if(btn) btn.classList.add('wrong'); }
+        
+        // AUTO-WIN LOGIC: If score hits 7, skip straight to summary
+        if(score === 7) {
+            setTimeout(showSummary, 600);
+            return;
+        }
+
         document.getElementById('result-ui').classList.remove('hidden');
-        document.getElementById('feedback-text').innerText = correct ? "CORRECT! ✨" : "WRONG! ❌";
+        document.getElementById('feedback-text').innerText = correct ? "MATCH! ✨" : "ERROR! ❌";
         
         const nextBtn = document.getElementById('next-btn');
         if(finishedSectors.length === 10) {
@@ -192,12 +181,13 @@
 
     function showSummary() {
         document.getElementById('play-screen').classList.add('hidden');
+        document.getElementById('grid-screen').classList.add('hidden');
         document.getElementById('summary-screen').classList.remove('hidden');
         if(score >= 7) {
             unlockedLvl = Math.max(unlockedLvl, currentLvl + 1);
-            document.getElementById('summary-msg').innerText = `Good Job! Only took ${score} points.`;
+            document.getElementById('summary-msg').innerText = `Good Job! Target reached with ${score} points.`;
         } else {
-            document.getElementById('summary-msg').innerText = `Level Finished. You scored ${score}/10.`;
+            document.getElementById('summary-msg').innerText = `Level Finished. Score: ${score}/10.`;
             if(score >= 5) unlockedLvl = Math.max(unlockedLvl, currentLvl + 1);
         }
     }
