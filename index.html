@@ -3,222 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTRA GAMER HUB 🚀</title>
+    <title>NEON COMMANDER 🕹️</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         :root { --blue: #00f2ff; --pink: #ff00ea; --bg: #050505; --card: #121212; --green: #00ff88; --red: #ff4d4d; }
-        body { font-family: 'Orbitron', sans-serif; background: var(--bg); color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--blue); box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); width: 95%; max-width: 500px; text-align: center; }
+        body { font-family: 'Orbitron', sans-serif; background: var(--bg); color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow: hidden; }
+        
+        .container { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--blue); box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); width: 95%; max-width: 500px; text-align: center; position: relative; }
         .hidden { display: none !important; }
-        
-        /* Level & Grid Styles */
-        .level-card { background: #1e1e1e; margin: 10px 0; padding: 15px; border-radius: 10px; border-left: 5px solid var(--pink); cursor: pointer; transition: 0.3s; position: relative; }
-        .locked { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
-        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 20px 0; }
-        .num-btn { padding: 10px; background: #333; border: 1px solid var(--blue); color: white; border-radius: 5px; cursor: pointer; }
-        .num-btn.done { background: var(--blue); color: black; }
-        .num-btn:disabled { opacity: 0.5; cursor: default; }
 
-        /* Game Elements */
-        .ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
-        .ans-btn { padding: 12px; background: #222; border: 1px solid #444; color: white; border-radius: 5px; cursor: pointer; }
-        .correct { background: var(--green) !important; color: black !important; font-weight: bold; }
-        .wrong { background: var(--red) !important; color: white !important; }
+        /* Timer Bar */
+        .timer-box { width: 100%; height: 10px; background: #222; border-radius: 5px; margin: 15px 0; overflow: hidden; border: 1px solid var(--blue); }
+        #timer-fill { height: 100%; width: 100%; background: linear-gradient(to right, var(--blue), var(--pink)); transition: width 1s linear; }
+
+        /* Level & Grid Styles */
+        .level-card { background: #1e1e1e; margin: 10px 0; padding: 15px; border-radius: 10px; border-left: 5px solid var(--pink); cursor: pointer; transition: 0.3s; }
+        .locked { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); }
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; }
+        .num-btn { padding: 15px; background: #222; border: 1px solid var(--blue); color: white; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .num-btn.done { border-color: var(--pink); color: var(--pink); opacity: 0.6; }
+
+        /* Game UI */
+        .ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+        .ans-btn { padding: 15px; background: #1a1a1a; border: 1px solid #444; color: white; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; }
+        .correct { background: var(--green) !important; color: black !important; box-shadow: 0 0 15px var(--green); }
+        .wrong { background: var(--red) !important; box-shadow: 0 0 15px var(--red); }
         
-        input { width: 80%; padding: 12px; background: #000; border: 2px solid var(--blue); color: white; text-align: center; border-radius: 10px; font-family: 'Orbitron'; }
-        .btn-main { background: var(--blue); color: black; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        input { width: 80%; padding: 15px; background: #000; border: 2px solid var(--blue); color: white; text-align: center; border-radius: 10px; font-size: 1.2rem; font-family: 'Orbitron'; margin-bottom: 10px;}
+        .btn-main { background: var(--blue); color: black; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         
-        /* Animations */
+        #feedback-text { font-size: 1.2rem; margin: 10px 0; }
         .shake { animation: shake 0.4s; }
-        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-8px);} 75% {transform: translateX(8px);} }
     </style>
 </head>
 <body>
 
-<div class="container" id="main-box">
+<div class="container" id="game-container">
     <div id="level-screen">
-        <h1 style="color: var(--blue)">GAMER MISSIONS</h1>
-        <div class="level-card" onclick="startLevel(1)">LEVEL 1: GK QUIZ 🧠 <span id="l1-status"></span></div>
-        <div class="level-card locked" id="lv2" onclick="startLevel(2)">LEVEL 2: JUMBLE 🔠 <span id="l2-status">🔒</span></div>
-        <div class="level-card locked" id="lv3" onclick="startLevel(3)">LEVEL 3: MATH RUSH 🔢 <span id="l3-status">🔒</span></div>
-        <div class="level-card locked" id="lv4" onclick="startLevel(4)">LEVEL 4: BOSS MODE 🔥 <span id="l4-status">🔒</span></div>
+        <h1 style="color: var(--blue); text-shadow: 0 0 10px var(--blue);">MISSION CONTROL</h1>
+        <div class="level-card" onclick="startLevel(1)">LVL 1: GK QUIZ 🧠 <span id="l1-s">🔓</span></div>
+        <div class="level-card locked" id="lv2" onclick="startLevel(2)">LVL 2: JUMBLE 🔠 <span id="l2-s">🔒</span></div>
+        <div class="level-card locked" id="lv3" onclick="startLevel(3)">LVL 3: MATH RUSH 🔢 <span id="l3-s">🔒</span></div>
     </div>
 
     <div id="grid-screen" class="hidden">
-        <button onclick="showLevels()" style="float:left; background:none; border:none; color:var(--pink); cursor:pointer;">← BACK</button>
-        <h2 id="mode-title">SELECT QUESTION</h2>
+        <h2 id="lvl-title">SELECT SECTOR</h2>
         <div class="grid" id="number-grid"></div>
-        <p id="progress-text">Score 7 to unlock next level!</p>
+        <p>Target: 7/10 Points</p>
     </div>
 
     <div id="play-screen" class="hidden">
-        <h3 id="question-display">Question?</h3>
+        <div class="timer-box"><div id="timer-fill"></div></div>
+        <h3 id="q-text">Loading...</h3>
         <div id="game-area"></div>
-        <div id="feedback-area" class="hidden">
+        <div id="result-overlay" class="hidden">
             <p id="feedback-text"></p>
-            <button class="btn-main" onclick="backToGrid()">CONTINUE</button>
+            <button class="btn-main" onclick="backToGrid()">NEXT SECTOR</button>
         </div>
     </div>
 </div>
 
 <script>
     let unlocked = 1;
-    let currentLevel = 0;
-    let currentScore = 0;
-    let completedInLvl = [];
-    const winSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3');
-    const loseSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3');
+    let currentLvl = 1;
+    let score = 0;
+    let finishedNums = [];
+    let timerInterval;
+    let timeLeft = 15;
 
-    // Questions Data (10 per Level)
-    const levelData = {
-        1: [ // GK Quiz
-            { q: "Capital of India?", a: [{t:"Mumbai", c:false}, {t:"Delhi", c:true}, {t:"Goa", c:false}, {t:"Pune", c:false}] },
-            { q: "Biggest Planet?", a: [{t:"Mars", c:false}, {t:"Jupiter", c:true}, {t:"Earth", c:false}, {t:"Venus", c:false}] },
-            { q: "Who made iPhone?", a: [{t:"Apple", c:true}, {t:"Sony", c:false}, {t:"Nokia", c:false}, {t:"Google", c:false}] },
-            { q: "7 + 3?", a: [{t:"10", c:true}, {t:"9", c:false}, {t:"11", c:false}, {t:"21", c:false}] },
-            { q: "Water H2O?", a: [{t:"Yes", c:true}, {t:"No", c:false}] },
-            { q: "Color of Grass?", a: [{t:"Blue", c:false}, {t:"Green", c:true}, {t:"Red", c:false}, {t:"Yellow", c:false}] },
-            { q: "King of Jungle?", a: [{t:"Tiger", c:false}, {t:"Lion", c:true}, {t:"Elephant", c:false}, {t:"Bear", c:false}] },
-            { q: "Human Bones?", a: [{t:"206", c:true}, {t:"100", c:false}, {t:"300", c:false}, {t:"50", c:false}] },
-            { q: "Fastest Bird?", a: [{t:"Ostrich", c:false}, {t:"Falcon", c:true}, {t:"Eagle", c:false}, {t:"Crow", c:false}] },
-            { q: "Coldest Place?", a: [{t:"Sahara", c:false}, {t:"Antarctica", c:true}, {t:"India", c:false}, {t:"Brazil", c:false}] }
+    const winSnd = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3');
+    const loseSnd = new Audio('https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3');
+
+    const data = {
+        1: [ // Quiz
+            { q: "Capital of France?", a: [{t:"Berlin", c:false}, {t:"Paris", c:true}, {t:"Rome", c:false}, {t:"Lyon", c:false}] },
+            { q: "Red Planet?", a: [{t:"Mars", c:true}, {t:"Venus", c:false}, {t:"Earth", c:false}, {t:"Pluto", c:false}] },
+            { q: "Who made iPhone?", a: [{t:"Apple", c:true}, {t:"Sony", c:false}] },
+            { q: "Largest Ocean?", a: [{t:"Pacific", c:true}, {t:"Indian", c:false}] },
+            { q: "Human bones?", a: [{t:"206", c:true}, {t:"300", c:false}] },
+            { q: "Fastest Animal?", a: [{t:"Cheetah", c:true}, {t:"Lion", c:false}] },
+            { q: "H2O is?", a: [{t:"Water", c:true}, {t:"Air", c:false}] },
+            { q: "King of Gods?", a: [{t:"Zeus", c:true}, {t:"Ares", c:false}] },
+            { q: "Sun is a?", a: [{t:"Star", c:true}, {t:"Planet", c:false}] },
+            { q: "7 * 8?", a: [{t:"56", c:true}, {t:"64", c:false}] }
         ],
         2: [ // Jumble
-            { c: "DOG", j: "GDO" }, { c: "CAT", j: "ATC" }, { c: "GAME", j: "EMAG" }, { c: "FISH", j: "HIFS" }, { c: "BIRD", j: "DRBI" },
-            { c: "MOON", j: "NOMO" }, { c: "STAR", j: "RAST" }, { c: "FIRE", j: "RIFE" }, { c: "WATER", j: "TEWRA" }, { c: "KING", j: "GNIK" }
+            { c: "ROBLOX", j: "XOLBRO" }, { c: "GAMER", j: "REMAG" }, { c: "PIZZA", j: "ZAPZI" }, { c: "GHOST", j: "SOTHG" }, { c: "SPACE", j: "EPACS" },
+            { c: "APPLE", j: "LPAPE" }, { c: "STORM", j: "MORST" }, { c: "SWORD", j: "ROWDS" }, { c: "PHONE", j: "ONEPH" }, { c: "TIGER", j: "RITEG" }
         ],
         3: [ // Math
-            { q: "12 + 8", ans: "20" }, { q: "5 * 5", ans: "25" }, { q: "100 / 4", ans: "25" }, { q: "9 - 4", ans: "5" }, { q: "20 * 3", ans: "60" },
-            { q: "50 + 50", ans: "100" }, { q: "11 * 2", ans: "22" }, { q: "15 / 3", ans: "5" }, { q: "7 + 7", ans: "14" }, { q: "10 * 10", ans: "100" }
+            { q: "15 + 15", ans: "30" }, { q: "9 * 3", ans: "27" }, { q: "100 - 25", ans: "75" }, { q: "12 / 2", ans: "6" }, { q: "5 * 5", ans: "25" },
+            { q: "10 + 40", ans: "50" }, { q: "8 * 2", ans: "16" }, { q: "18 / 3", ans: "6" }, { q: "7 + 9", ans: "16" }, { q: "50 * 2", ans: "100" }
         ]
     };
 
-    function startLevel(lvl) {
-        if(lvl > unlocked) return alert("Unlock previous level first!");
-        currentLevel = lvl;
-        currentScore = 0;
-        completedInLvl = [];
-        showGrid();
-    }
-
-    function showGrid() {
+    function startLevel(l) {
+        if(l > unlocked) return;
+        currentLvl = l; score = 0; finishedNums = [];
         document.getElementById('level-screen').classList.add('hidden');
         document.getElementById('grid-screen').classList.remove('hidden');
-        document.getElementById('play-screen').classList.add('hidden');
+        genGrid();
+    }
+
+    function genGrid() {
         const grid = document.getElementById('number-grid');
         grid.innerHTML = '';
         for(let i=1; i<=10; i++) {
-            const btn = document.createElement('button');
-            btn.className = completedInLvl.includes(i-1) ? 'num-btn done' : 'num-btn';
-            btn.innerText = i;
-            btn.disabled = completedInLvl.includes(i-1);
-            btn.onclick = () => loadQuestion(i-1);
-            grid.appendChild(btn);
+            const b = document.createElement('button');
+            b.className = finishedNums.includes(i-1) ? 'num-btn done' : 'num-btn';
+            b.innerText = i;
+            b.disabled = finishedNums.includes(i-1);
+            b.onclick = () => loadQ(i-1);
+            grid.appendChild(b);
         }
     }
 
-    function loadQuestion(idx) {
+    function loadQ(idx) {
         document.getElementById('grid-screen').classList.add('hidden');
         document.getElementById('play-screen').classList.remove('hidden');
-        document.getElementById('feedback-area').classList.add('hidden');
+        document.getElementById('result-overlay').classList.add('hidden');
         const area = document.getElementById('game-area');
         area.innerHTML = '';
-        const qData = levelData[currentLevel][idx];
-        document.getElementById('question-display').innerText = qData.q || `Unscramble: ${qData.j}`;
+        finishedNums.push(idx);
+        
+        const qData = data[currentLvl][idx];
+        document.getElementById('q-text').innerText = qData.q || `UNSCRAMBLE: ${qData.j}`;
 
-        if(currentLevel === 1) { // Quiz
-            const div = document.createElement('div');
-            div.className = 'ans-grid';
-            qData.a.forEach(ans => {
-                const b = document.createElement('button');
-                b.className = 'ans-btn';
-                b.innerText = ans.t;
-                b.onclick = () => checkQuiz(b, ans.c, qData.a);
-                div.appendChild(b);
+        if(currentLvl === 1) {
+            const g = document.createElement('div'); g.className = 'ans-grid';
+            qData.a.forEach(opt => {
+                const b = document.createElement('button'); b.className = 'ans-btn';
+                b.innerText = opt.t; b.onclick = () => check(opt.c, b, qData.a);
+                g.appendChild(b);
             });
-            area.appendChild(div);
-        } else { // Jumble or Math
-            const input = document.createElement('input');
-            input.id = "user-input";
-            input.placeholder = "Answer here...";
-            const b = document.createElement('button');
-            b.className = "btn-main";
-            b.innerText = "SUBMIT";
-            b.onclick = () => checkInput(input.value, qData.c || qData.ans);
-            area.appendChild(input);
-            area.appendChild(b);
-        }
-        completedInLvl.push(idx);
-    }
-
-    function checkQuiz(btn, isCorrect, allOptions) {
-        document.querySelectorAll('.ans-btn').forEach(b => b.disabled = true);
-        if(isCorrect) {
-            btn.classList.add('correct');
-            scorePoint();
+            area.appendChild(g);
         } else {
-            btn.classList.add('wrong');
-            loseSound.play();
-            allOptions.forEach((o, i) => { if(o.c) document.querySelectorAll('.ans-btn')[i].classList.add('correct'); });
+            const inp = document.createElement('input'); inp.id = "ui";
+            const btn = document.createElement('button'); btn.className = "btn-main"; 
+            btn.innerText = "SUBMIT"; btn.onclick = () => check(inp.value.toUpperCase().trim() === (qData.c || qData.ans), null, qData.c || qData.ans);
+            area.appendChild(inp); area.appendChild(btn);
         }
-        showFeedback(isCorrect);
+        startTimer();
     }
 
-    function checkInput(val, correct) {
-        const isCorrect = val.toUpperCase().trim() === correct.toUpperCase();
-        if(isCorrect) scorePoint();
-        else {
-            loseSound.play();
-            document.getElementById('main-box').classList.add('shake');
-            setTimeout(() => document.getElementById('main-box').classList.remove('shake'), 400);
+    function startTimer() {
+        timeLeft = 15;
+        const fill = document.getElementById('timer-fill');
+        fill.style.width = '100%';
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            fill.style.width = (timeLeft / 15 * 100) + '%';
+            if(timeLeft <= 0) { clearInterval(timerInterval); check(false, null, "TIME OUT"); }
+        }, 1000);
+    }
+
+    function check(isCorrect, btn, extra) {
+        clearInterval(timerInterval);
+        if(isCorrect) {
+            if(btn) btn.classList.add('correct');
+            score++; winSnd.play();
+        } else {
+            if(btn) btn.classList.add('wrong');
+            loseSnd.play();
+            document.getElementById('game-container').classList.add('shake');
+            setTimeout(() => document.getElementById('game-container').classList.remove('shake'), 400);
+            // Auto reveal
+            if(currentLvl === 1) {
+                const btns = document.querySelectorAll('.ans-btn');
+                extra.forEach((o, i) => { if(o.c) btns[i].classList.add('correct'); });
+            }
         }
-        showFeedback(isCorrect, correct);
-    }
-
-    function scorePoint() {
-        currentScore++;
-        winSound.play();
-    }
-
-    function showFeedback(isCorrect, correctVal) {
-        const f = document.getElementById('feedback-area');
-        f.classList.remove('hidden');
-        document.getElementById('feedback-text').innerText = isCorrect ? "✅ EXCELLENT!" : `❌ WRONG! Correct: ${correctVal || ''}`;
+        document.getElementById('result-overlay').classList.remove('hidden');
+        document.getElementById('feedback-text').innerText = isCorrect ? "XP GAINED! ✅" : `FAILED! Correct: ${typeof extra === 'string' ? extra : 'Highlighted'}`;
         document.getElementById('feedback-text').style.color = isCorrect ? 'var(--green)' : 'var(--red)';
     }
 
     function backToGrid() {
-        if(completedInLvl.length === 10) {
-            checkLevelPass();
+        if(finishedNums.length === 10) {
+            if(score >= 7) {
+                unlocked = Math.max(unlocked, currentLvl + 1);
+                alert(`MISSION SUCCESS! SCORE: ${score}/10`);
+                updateLocks();
+            } else { alert(`MISSION FAILED! Score 7 to pass. You got ${score}`); }
+            document.getElementById('level-screen').classList.remove('hidden');
+            document.getElementById('play-screen').classList.add('hidden');
         } else {
-            showGrid();
+            document.getElementById('grid-screen').classList.remove('hidden');
+            document.getElementById('play-screen').classList.add('hidden');
+            genGrid();
         }
     }
 
-    function checkLevelPass() {
-        if(currentScore >= 7) {
-            unlocked = Math.max(unlocked, currentLevel + 1);
-            alert(`Level Passed! You scored ${currentScore}/10. Next Level Unlocked!`);
-            updateLockStatus();
-        } else {
-            alert(`Try Again! You need 7 points, you got ${currentScore}.`);
-        }
-        showLevels();
-    }
-
-    function updateLockStatus() {
-        for(let i=2; i<=4; i++) {
+    function updateLocks() {
+        for(let i=2; i<=3; i++) {
             if(unlocked >= i) {
                 document.getElementById(`lv${i}`).classList.remove('locked');
-                document.getElementById(`l${i}-status`).innerText = "🔓";
+                document.getElementById(`l${i}-s`).innerText = "🔓";
             }
         }
-    }
-
-    function showLevels() {
-        document.getElementById('level-screen').classList.remove('hidden');
-        document.getElementById('grid-screen').classList.add('hidden');
-        document.getElementById('play-screen').classList.add('hidden');
     }
 </script>
 </body>
