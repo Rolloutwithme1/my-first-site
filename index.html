@@ -3,39 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON COMMANDER: SKIP & EVOLVE 🚀🔥</title>
+    <title>NEON COMMANDER: ULTIMATE EDITION</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-        :root { --blue: #00f2ff; --pink: #ff00ea; --bg: #050505; --card: #121212; --green: #00ff88; --red: #ff4d4d; --fire: #ff6a00; }
-        body { font-family: 'Orbitron', sans-serif; background: var(--bg); color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow: hidden; }
         
-        .container { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--blue); box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); width: 95%; max-width: 500px; text-align: center; position: relative; }
+        :root {
+            --blue: #00f2ff;
+            --pink: #ff00ea;
+            --bg: #050505;
+            --card: #121212;
+            --green: #00ff88;
+            --red: #ff4d4d;
+            --fire: #ff6a00;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: var(--bg);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            background: var(--card);
+            padding: 25px;
+            border-radius: 20px;
+            border: 2px solid var(--blue);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
+            width: 95%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+        }
+
         .hidden { display: none !important; }
 
-        .timer-box { width: 100%; height: 12px; background: #222; border-radius: 10px; margin: 15px 0; overflow: hidden; border: 1px solid var(--blue); }
-        #timer-fill { height: 100%; width: 100%; background: linear-gradient(to right, #ff00ea, #00f2ff); transition: width 1s linear; }
+        /* Timer Bar */
+        .timer-box {
+            width: 100%;
+            height: 10px;
+            background: #222;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        #timer-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(to right, var(--pink), var(--blue));
+            transition: width 1s linear;
+        }
 
-        #score-tracker { font-size: 1.2rem; margin-bottom: 10px; }
-        .on-fire { color: var(--fire) !important; text-shadow: 0 0 20px #ff6a00; animation: burn 0.4s infinite alternate; }
-        @keyframes burn { from { transform: scale(1); } to { transform: scale(1.15); } }
+        /* Level Cards */
+        .level-card {
+            background: #1e1e1e;
+            margin: 10px 0;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 6px solid #444;
+            cursor: pointer;
+            transition: 0.3s;
+            opacity: 0.5;
+        }
+        .unlocked {
+            opacity: 1;
+            border-left-color: var(--pink);
+            border-right: 1px solid var(--blue);
+            transform: scale(1.02);
+        }
 
-        .level-card { background: #1e1e1e; margin: 10px 0; padding: 15px; border-radius: 12px; border-left: 6px solid #444; cursor: pointer; transition: 0.3s; opacity: 0.5; font-size: 1.1rem; }
-        .unlocked { opacity: 1; border-left-color: var(--pink); border-right: 1px solid var(--blue); transform: scale(1.02); }
+        /* Sector Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .num-btn {
+            padding: 15px 5px;
+            background: #222;
+            border: 1px solid var(--blue);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .num-btn.done {
+            border-color: var(--pink);
+            color: var(--pink);
+            opacity: 0.4;
+            pointer-events: none;
+        }
 
-        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; }
-        .num-btn { padding: 15px; background: #222; border: 1px solid var(--blue); color: white; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1rem; }
-        .num-btn.done { border-color: var(--pink); color: var(--pink); opacity: 0.4; pointer-events: none; }
+        /* Rebus Style */
+        .rebus-ui {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .rebus-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border: 2px solid var(--pink);
+            border-radius: 10px;
+        }
+        .plus { font-size: 2rem; color: var(--blue); }
 
-        .ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
-        .ans-btn { padding: 15px; background: #1a1a1a; border: 1px solid #444; color: white; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; transition: 0.2s; }
+        /* Answers */
+        .ans-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .ans-btn {
+            padding: 15px;
+            background: #1a1a1a;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Orbitron';
+        }
         .correct { background: var(--green) !important; color: black !important; }
         .wrong { background: var(--red) !important; }
-        
-        .btn-main { background: var(--blue); color: black; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin: 5px; }
-        .btn-skip { background: #444; color: white; border: 1px solid #777; padding: 12px 25px; border-radius: 8px; cursor: pointer; margin: 5px; }
-        
-        .hint-btn { background: #333; color: #ffae00; border: 1px solid #ffae00; padding: 8px 15px; border-radius: 20px; cursor: pointer; margin-bottom: 10px; font-family: 'Orbitron'; font-size: 0.8rem; }
-        #hint-text { color: #ffae00; font-style: italic; margin-top: 5px; font-size: 0.9rem; }
+
+        input {
+            width: 80%;
+            padding: 15px;
+            background: #000;
+            border: 2px solid var(--blue);
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-family: 'Orbitron';
+            margin-bottom: 15px;
+        }
+
+        .btn-main { background: var(--blue); color: black; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-skip-lvl { background: var(--red); color: white; padding: 10px; border: none; border-radius: 8px; width: 100%; cursor: pointer; font-family: 'Orbitron'; margin-top: 10px; }
+
         .shake { animation: shake 0.4s; }
         @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-8px);} 75% {transform: translateX(8px);} }
     </style>
@@ -44,245 +160,209 @@
 
 <div class="container" id="game-container">
     <div id="level-screen">
-        <h1 style="color: var(--blue);">👾 GAMER HUB 🕹️</h1>
-        <div id="btn-lvl1" class="level-card unlocked" onclick="initAndStart(1)">🛸 LVL 1: GK QUIZ 🧠</div>
-        <div id="btn-lvl2" class="level-card" onclick="initAndStart(2)">🍕 LVL 2: EMOJI LOGIC 💡</div>
-        <div id="btn-lvl3" class="level-card" onclick="initAndStart(3)">⚽ LVL 3: MATH RUSH 🔢</div>
-        <div id="btn-lvl4" class="level-card" onclick="initAndStart(4)">💀 LVL 4: BOSS RUSH 🔥</div>
+        <h1 style="color: var(--blue);">👾 NEON HUB</h1>
+        <div id="btn-lvl1" class="level-card unlocked" onclick="startLvl(1)">LVL 1: GK QUIZ</div>
+        <div id="btn-lvl2" class="level-card" onclick="startLvl(2)">LVL 2: JUMBLED</div>
+        <div id="btn-lvl3" class="level-card" onclick="startLvl(3)">LVL 3: VISUAL REBUS</div>
+        <div id="btn-lvl4" class="level-card" onclick="startLvl(4)">LVL 4: BOSS MODE</div>
     </div>
 
     <div id="grid-screen" class="hidden">
         <div style="display:flex; justify-content: space-between; align-items: center;">
-            <button onclick="showLevels()" style="color:var(--pink); background:none; border:none; cursor:pointer; font-size:1.5rem;">🔙</button>
-            <h2 id="score-tracker">💎 Score: 0/6</h2>
+            <button onclick="showHome()" style="color:var(--pink); background:none; border:none; cursor:pointer; font-size:1.5rem;">🔙</button>
+            <h2 id="score-tracker">💎 0/6</h2>
         </div>
-        <div class="grid" id="number-grid"></div>
-        <p id="lvl-info">Target: 6 Wins! 🎯</p>
+        <div class="grid" id="sector-grid"></div>
+        <button class="btn-skip-lvl" onclick="forceUnlock()">⏩ SKIP FULL LEVEL & UNLOCK NEXT</button>
     </div>
 
     <div id="play-screen" class="hidden">
         <div class="timer-box"><div id="timer-fill"></div></div>
-        <button id="hint-trigger" class="hint-btn" onclick="useHint()">💡 HINT (2/2)</button>
-        <p id="hint-text" class="hidden"></p>
-        <h3 id="q-text">Question? 🤔</h3>
+        <h3 id="q-text">Loading...</h3>
         <div id="game-area"></div>
-        <div id="action-bar" style="margin-top:20px;">
-            <button class="btn-skip" onclick="skipSector()">SKIP SECTOR ⏭️</button>
-        </div>
-        <div id="result-overlay" class="hidden">
-            <p id="feedback-text" style="font-size: 1.5rem; font-weight: bold;"></p>
+        <div id="result-ui" class="hidden">
+            <p id="feedback-text" style="font-size: 1.2rem; font-weight: bold;"></p>
             <button class="btn-main" onclick="backToGrid()">CONTINUE 🚀</button>
         </div>
     </div>
 </div>
 
 <script>
-    const sounds = {
-        win: new Audio('https://actions.google.com/sounds/v1/cartoon/clime_up_the_ladder.ogg'),
-        lose: new Audio('https://actions.google.com/sounds/v1/cartoon/slide_whistle_to_drum_hit.ogg'),
-        streak: new Audio('https://actions.google.com/sounds/v1/foley/beeps_and_bloops_short.ogg')
-    };
-
-    function playSnd(name) {
-        sounds[name].currentTime = 0;
-        sounds[name].play().catch(e => {});
-    }
-
-    function initAndStart(l) {
-        Object.values(sounds).forEach(s => { s.play(); s.pause(); });
-        startLevel(l);
-    }
-
     let currentLvl = 1;
     let unlockedLvl = 1;
     let score = 0;
-    let streak = 0;
-    let hintsLeft = 2;
-    let currentQIndex = 0;
-    let finishedNums = [];
+    let finishedSectors = [];
     let timerInterval;
 
-    const data = {
-        1: [
-            { q: "Capital of India? 🇮🇳", hint: "Starts with D!", a: [{t:"Delhi", c:true}, {t:"Mumbai", c:false}] },
-            { q: "Red Planet? 🔴", hint: "Elon Musk's goal!", a: [{t:"Mars", c:true}, {t:"Venus", c:false}] },
-            { q: "Fastest Animal? 🐆", hint: "It has spots!", a: [{t:"Cheetah", c:true}, {t:"Tiger", c:false}] },
-            { q: "Moon orbits? 🌙", hint: "Where we live!", a: [{t:"Earth", c:true}, {t:"Sun", c:false}] },
-            { q: "H2O is? 💧", hint: "You drink it!", a: [{t:"Water", c:true}, {t:"Milk", c:false}] },
-            { q: "King of Jungle? 🦁", hint: "Big Mane!", a: [{t:"Lion", c:true}, {t:"Bear", c:false}] },
-            { q: "Longest River? 🌊", hint: "In Egypt!", a: [{t:"Nile", c:true}, {t:"Amazon", c:false}] },
-            { q: "Bones in body? 🦴", hint: "20_", a: [{t:"206", c:true}, {t:"210", c:false}] },
-            { q: "Largest Planet? 🪐", hint: "Has a red spot!", a: [{t:"Jupiter", c:true}, {t:"Saturn", c:false}] },
-            { q: "Sun is a? ☀️", hint: "A twinkle...", a: [{t:"Star", c:true}, {t:"Planet", c:false}] }
+    const gameData = {
+        1: [ // GK
+            { q: "Capital of India?", a: [{t:"Delhi", c:true}, {t:"Mumbai", c:false}] },
+            { q: "Red Planet?", a: [{t:"Mars", c:true}, {t:"Venus", c:false}] },
+            { q: "Sun is a...?", a: [{t:"Star", c:true}, {t:"Planet", c:false}] },
+            { q: "H2O is...?", a: [{t:"Water", c:true}, {t:"Air", c:false}] },
+            { q: "Largest Ocean?", a: [{t:"Pacific", c:true}, {t:"Indian", c:false}] },
+            { q: "Human Bones?", a: [{t:"206", c:true}, {t:"210", c:false}] },
+            { q: "King of Jungle?", a: [{t:"Lion", c:true}, {t:"Tiger", c:false}] },
+            { q: "Fastest Bird?", a: [{t:"Falcon", c:true}, {t:"Eagle", c:false}] },
+            { q: "Moon orbits...?", a: [{t:"Earth", c:true}, {t:"Sun", c:false}] },
+            { q: "Primary Colors?", a: [{t:"3", c:true}, {t:"5", c:false}] }
         ],
-        2: [
-            { q: "🍎 + 🍎 = 10. 🍎 = ?", hint: "10 divided by 2!", a: [{t:"5", c:true}, {t:"10", c:false}] },
-            { q: "🍔 + 🍔 = 20. 🍔 = ?", hint: "Half of 20!", a: [{t:"10", c:true}, {t:"5", c:false}] },
-            { q: "🍦 + 🍎 = 15 (🍎=5). 🍦 = ?", hint: "15 minus 5!", a: [{t:"10", c:true}, {t:"5", c:false}] },
-            { q: "🍕 + 🍕 + 🍕 = 9. 🍕 = ?", hint: "3 times what is 9?", a: [{t:"3", c:true}, {t:"1", c:false}] },
-            { q: "🎈 + 🎈 = 12. 🎈 = ?", hint: "Double 6 is...", a: [{t:"6", c:true}, {t:"12", c:false}] },
-            { q: "🐱 + 🐱 = 4. 🐱 = ?", hint: "Two plus two!", a: [{t:"2", c:true}, {t:"4", c:false}] },
-            { q: "⚡ + ⚡ = 100. ⚡ = ?", hint: "Half of 100!", a: [{t:"50", c:true}, {t:"100", c:false}] },
-            { q: "💎 + 💎 = 10. 💎 = ?", hint: "5 + 5!", a: [{t:"5", c:true}, {t:"10", c:false}] },
-            { q: "🔥 + 🔥 = 14. 🔥 = ?", hint: "Lucky number 7!", a: [{t:"7", c:true}, {t:"14", c:false}] },
-            { q: "👑 + 👑 = 2. 👑 = ?", hint: "The first number!", a: [{t:"1", c:true}, {t:"2", c:false}] }
+        2: [ // Jumbled
+            { q: "XOLBRO", ans: "ROBLOX" }, { q: "ZAPZI", ans: "PIZZA" }, { q: "SOTHG", ans: "GHOST" },
+            { q: "EPACS", ans: "SPACE" }, { q: "LPAPE", ans: "APPLE" }, { q: "RITEG", ans: "TIGER" },
+            { q: "ONEPH", ans: "PHONE" }, { q: "TEWRA", ans: "WATER" }, { q: "ECNAD", ans: "DANCE" },
+            { q: "CISUM", ans: "MUSIC" }
         ],
-        3: [
-            { q: "10 * 10 ➕", a: [{t:"100", c:true}, {t:"20", c:false}], hint: "One and two zeros!" },
-            { q: "50 / 2 ➗", a: [{t:"25", c:true}, {t:"52", c:false}], hint: "A quarter of 100!" },
-            { q: "12 + 13 ➖", a: [{t:"25", c:true}, {t:"24", c:false}], hint: "Half of 50!" },
-            { q: "9 * 3 ✖️", a: [{t:"27", c:true}, {t:"21", c:false}], hint: "Almost 30!" },
-            { q: "8 + 8 + 8 ➕", a: [{t:"24", c:true}, {t:"22", c:false}], hint: "Two Dozen!" },
-            { q: "100 - 1 ➖", a: [{t:"99", c:true}, {t:"101", c:false}], hint: "Double 9!" },
-            { q: "4 * 4 ✖️", a: [{t:"16", c:true}, {t:"12", c:false}], hint: "Sweet 16!" },
-            { q: "30 / 5 ➗", a: [{t:"6", c:true}, {t:"5", c:false}], hint: "Half a dozen!" },
-            { q: "7 * 2 ✖️", a: [{t:"14", c:true}, {t:"16", c:false}], hint: "Two weeks!" },
-            { q: "11 + 11 ➕", a: [{t:"22", c:true}, {t:"111", c:false}], hint: "Double 11!" }
+        3: [ // Rebus (Image + Image)
+            { i1: "https://images.unsplash.com/photo-1534274988757-a28bf1f53417?w=200", i2: "https://images.unsplash.com/photo-1590250059345-f09559670087?w=200", a: [{t:"RAINBOW", c:true}, {t:"SUNSET", c:false}] },
+            { i1: "https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?w=200", i2: "https://images.unsplash.com/photo-1587829741301-dc798b83bac1?w=200", a: [{t:"KEYBOARD", c:true}, {t:"PIANO", c:false}] },
+            { i1: "https://images.unsplash.com/photo-1547721064-362036938502?w=200", i2: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=200", a: [{t:"PANCAKE", c:true}, {t:"BREAD", c:false}] },
+            { i1: "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=200", i2: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=200", a: [{t:"FIREFLY", c:true}, {t:"DRAGONFLY", c:false}] },
+            { i1: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=200", i2: "https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?w=200", a: [{t:"BUTTERFLY", c:true}, {t:"MOTH", c:false}] },
+            { i1: "https://images.unsplash.com/photo-1501747315-124a0eaca060?w=200", i2: "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=200", a: [{t:"FOOTBALL", c:true}, {t:"BASKETBALL", c:false}] },
+            { i1: "https://images.unsplash.com/photo-1495360010541-f48722b34f7d?w=200", i2: "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=200", a: [{t:"CATWALK", c:true}, {t:"SIDEWALK", c:false}] },
+            { i1: "https://images.unsplash.com/photo-1506466010722-395aa2bef877?w=200", i2: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=200", a: [{t:"HARDWARE", c:true}, {t:"SOFTWARE", c:false}] },
+            { i1: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=200", i2: "https://images.unsplash.com/photo-1542435503-956c469947f6?w=200", a: [{t:"PAPERWEIGHT", c:true}, {t:"BOOKEND", c:false}] },
+            { i1: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Amelia_Earhart_1937.jpg/220px-Amelia_Earhart_1937.jpg", i2: "https://images.unsplash.com/photo-1610410761376-78716388481d?w=200", a: [{t:"AMELIA EARHART", c:true}, {t:"PILOT", c:false}] }
         ],
-        4: [
-            { q: "Capital of France? 🇫🇷", a: [{t:"Paris", c:true}, {t:"Lyon", c:false}], hint: "Eiffel Tower!" },
-            { q: "Who painted Mona Lisa? 🎨", a: [{t:"Da Vinci", c:true}, {t:"Picasso", c:false}], hint: "Leonardo!" },
-            { q: "Fastest land animal? 🐆", a: [{t:"Cheetah", c:true}, {t:"Lion", c:false}], hint: "Spots!" },
-            { q: "Biggest mammal? 🐋", a: [{t:"Blue Whale", c:true}, {t:"Elephant", c:false}], hint: "In the ocean!" },
-            { q: "Inventor of Bulb? 💡", a: [{t:"Edison", c:true}, {t:"Tesla", c:false}], hint: "Thomas!" },
-            { q: "Planet with rings? 🪐", a: [{t:"Saturn", c:true}, {t:"Mars", c:false}], hint: "The Ring Lord!" },
-            { q: "Frozen water? 🧊", a: [{t:"Ice", c:true}, {t:"Steam", c:false}], hint: "Cold!" },
-            { q: "Coldest continent? ❄️", a: [{t:"Antarctica", c:true}, {t:"Asia", c:false}], hint: "Penguins!" },
-            { q: "Number of continents? 🌍", a: [{t:"7", c:true}, {t:"5", c:false}], hint: "Lucky 7!" },
-            { q: "Boss Win? 🏆", a: [{t:"YES!", c:true}, {t:"NO!", c:false}], hint: "Click Yes!" }
+        4: [ // Boss GK (Fast)
+            { q: "Is Fire hot?", a: [{t:"Yes", c:true}, {t:"No", c:false}] },
+            { q: "Does Fish fly?", a: [{t:"No", c:true}, {t:"Yes", c:false}] },
+            { q: "2 + 2 * 0?", a: [{t:"2", c:true}, {t:"0", c:false}] },
+            { q: "Blue + Yellow?", a: [{t:"Green", c:true}, {t:"Red", c:false}] },
+            { q: "Spider Legs?", a: [{t:"8", c:true}, {t:"6", c:false}] },
+            { q: "Earth is round?", a: [{t:"True", c:true}, {t:"False", c:false}] },
+            { q: "Icy water is?", a: [{t:"Cold", c:true}, {t:"Hot", c:false}] },
+            { q: "Gravity pulls?", a: [{t:"Down", c:true}, {t:"Up", c:false}] },
+            { q: "Final Boss?", a: [{t:"Me", c:true}, {t:"You", c:false}] },
+            { q: "You Win?", a: [{t:"YES", c:true}, {t:"NO", c:false}] }
         ]
     };
 
-    function startLevel(l) {
+    function startLvl(l) {
         if(l > unlockedLvl) return;
-        currentLvl = l; score = 0; streak = 0; hintsLeft = 2; finishedNums = [];
+        currentLvl = l; score = 0; finishedSectors = [];
         document.getElementById('level-screen').classList.add('hidden');
         document.getElementById('grid-screen').classList.remove('hidden');
-        document.getElementById('score-tracker').innerText = `💎 Score: 0/6`;
-        genGrid();
+        updateGrid();
     }
 
-    function genGrid() {
-        const grid = document.getElementById('number-grid');
+    function updateGrid() {
+        const grid = document.getElementById('sector-grid');
         grid.innerHTML = '';
-        for(let i=1; i<=10; i++) {
-            const b = document.createElement('button');
-            b.className = finishedNums.includes(i-1) ? 'num-btn done' : 'num-btn';
-            b.innerText = `S-${i}`;
-            b.disabled = finishedNums.includes(i-1);
-            b.onclick = () => loadQ(i-1);
-            grid.appendChild(b);
+        document.getElementById('score-tracker').innerText = `💎 ${score}/6`;
+        for(let i=0; i<10; i++) {
+            const btn = document.createElement('button');
+            btn.className = finishedSectors.includes(i) ? 'num-btn done' : 'num-btn';
+            btn.innerText = `S-${i+1}`;
+            btn.onclick = () => loadQ(i);
+            grid.appendChild(btn);
         }
-    }
-
-    function shuffle(array) {
-        return array.sort(() => Math.random() - 0.5);
     }
 
     function loadQ(idx) {
-        currentQIndex = idx;
         document.getElementById('grid-screen').classList.add('hidden');
         document.getElementById('play-screen').classList.remove('hidden');
-        document.getElementById('result-overlay').classList.add('hidden');
-        document.getElementById('action-bar').classList.remove('hidden');
-        document.getElementById('hint-text').classList.add('hidden');
-        updateHintButton();
+        document.getElementById('result-ui').classList.add('hidden');
         
         const area = document.getElementById('game-area');
         area.innerHTML = '';
-        
-        const qData = data[currentLvl][idx];
-        document.getElementById('q-text').innerText = qData.q;
-        
-        const shuffledOptions = shuffle([...qData.a]); 
-        const g = document.createElement('div'); g.className = 'ans-grid';
-        shuffledOptions.forEach(opt => {
-            const b = document.createElement('button'); b.className = 'ans-btn';
-            b.innerText = opt.t; b.onclick = () => check(opt.c, b);
-            g.appendChild(b);
-        });
-        area.appendChild(g);
+        const qData = gameData[currentLvl][idx];
+
+        if(currentLvl === 3) {
+            document.getElementById('q-text').innerText = "Combine the concepts:";
+            area.innerHTML = `
+                <div class="rebus-ui">
+                    <img src="${qData.i1}" class="rebus-img">
+                    <div class="plus">+</div>
+                    <img src="${qData.i2}" class="rebus-img">
+                </div>
+            `;
+        } else {
+            document.getElementById('q-text').innerText = qData.q;
+        }
+
+        if(qData.a) {
+            // SHUFFLE LOGIC
+            const shuffled = [...qData.a].sort(() => Math.random() - 0.5);
+            const g = document.createElement('div'); g.className = 'ans-grid';
+            shuffled.forEach(opt => {
+                const b = document.createElement('button');
+                b.className = 'ans-btn';
+                b.innerText = opt.t;
+                b.onclick = () => check(opt.c, b, idx);
+                g.appendChild(b);
+            });
+            area.appendChild(g);
+        } else {
+            const inp = document.createElement('input'); inp.id = "user-inp";
+            inp.placeholder = "TYPE ANSWER...";
+            const b = document.createElement('button'); b.className = "btn-main";
+            b.innerText = "SUBMIT";
+            b.onclick = () => check(inp.value.toUpperCase().trim() === qData.ans, null, idx);
+            area.appendChild(inp); area.appendChild(b);
+        }
         startTimer();
     }
 
-    function useHint() {
-        if(hintsLeft > 0) {
-            hintsLeft--;
-            const hintBox = document.getElementById('hint-text');
-            hintBox.innerText = "🔎 " + data[currentLvl][currentQIndex].hint;
-            hintBox.classList.remove('hidden');
-            updateHintButton();
-            playSnd('streak');
-        }
-    }
-
-    function updateHintButton() {
-        const btn = document.getElementById('hint-trigger');
-        btn.innerText = `💡 HINT (${hintsLeft}/2)`;
-        btn.disabled = hintsLeft <= 0;
-    }
-
     function startTimer() {
-        let t = 12;
+        let t = (currentLvl === 4) ? 5 : 12;
         const fill = document.getElementById('timer-fill');
         fill.style.width = '100%';
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
             t--;
-            fill.style.width = (t / 12 * 100) + '%';
-            if(t <= 0) { clearInterval(timerInterval); check(false, null); }
+            fill.style.width = (t / (currentLvl === 4 ? 5 : 12) * 100) + '%';
+            if(t <= 0) { clearInterval(timerInterval); check(false, null, -1); }
         }, 1000);
     }
 
-    function check(isCorrect, btn) {
+    function check(correct, btn, idx) {
         clearInterval(timerInterval);
-        finishedNums.push(currentQIndex); // Mark as done
-        const tracker = document.getElementById('score-tracker');
-        if(isCorrect) {
+        if(idx !== -1) finishedSectors.push(idx);
+        
+        if(correct) {
             if(btn) btn.classList.add('correct');
-            score++; streak++;
-            playSnd('win');
-            if(streak >= 3) { tracker.classList.add('on-fire'); playSnd('streak'); }
+            score++;
         } else {
             if(btn) btn.classList.add('wrong');
-            streak = 0; tracker.classList.remove('on-fire');
-            playSnd('lose');
             document.getElementById('game-container').classList.add('shake');
             setTimeout(() => document.getElementById('game-container').classList.remove('shake'), 400);
         }
-        tracker.innerText = `💎 Score: ${score}/6 ${streak > 0 ? '🔥' + streak : ''}`;
-        document.getElementById('result-overlay').classList.remove('hidden');
-        document.getElementById('action-bar').classList.add('hidden');
-        document.getElementById('feedback-text').innerText = isCorrect ? "SUCCESS! ✨" : "MISS! ❌";
-        document.getElementById('feedback-text').style.color = isCorrect ? 'var(--green)' : 'var(--red)';
-        
+
+        document.getElementById('result-ui').classList.remove('hidden');
+        document.getElementById('feedback-text').innerText = correct ? "SUCCESS! ✨" : "MISS! ❌";
+        document.getElementById('feedback-text').style.color = correct ? 'var(--green)' : 'var(--red)';
+
         if(score >= 6) {
             unlockedLvl = Math.max(unlockedLvl, currentLvl + 1);
             document.getElementById(`btn-lvl${unlockedLvl}`).classList.add('unlocked');
         }
     }
 
-    function skipSector() {
-        clearInterval(timerInterval);
-        // Don't mark as finished, just go back
-        document.getElementById('grid-screen').classList.remove('hidden');
-        document.getElementById('play-screen').classList.add('hidden');
-        genGrid();
-    }
-
-    function showLevels() {
-        document.getElementById('level-screen').classList.remove('hidden');
-        document.getElementById('grid-screen').classList.add('hidden');
+    function forceUnlock() {
+        unlockedLvl = Math.min(4, currentLvl + 1);
+        for(let i=1; i<=4; i++) {
+            if(i <= unlockedLvl) document.getElementById(`btn-lvl${i}`).classList.add('unlocked');
+        }
+        alert("LEVEL SKIPPED! Next stage unlocked.");
+        showHome();
     }
 
     function backToGrid() {
-        if(score >= 6) { alert("✅ LEVEL PASSED!"); showLevels(); }
-        else if(finishedNums.length === 10) { alert("❌ OUT OF SECTORS! RESTARTING..."); startLevel(currentLvl); }
+        if(score >= 6) showHome();
+        else if(finishedSectors.length === 10) { alert("Sectors exhausted! Restarting grid."); startLvl(currentLvl); }
         else {
             document.getElementById('grid-screen').classList.remove('hidden');
             document.getElementById('play-screen').classList.add('hidden');
-            genGrid();
+            updateGrid();
         }
+    }
+
+    function showHome() {
+        document.getElementById('level-screen').classList.remove('hidden');
+        document.getElementById('grid-screen').classList.add('hidden');
+        document.getElementById('play-screen').classList.add('hidden');
     }
 </script>
 </body>
