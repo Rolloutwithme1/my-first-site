@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON COMMANDER: HINT EDITION 💡🔥</title>
+    <title>NEON COMMANDER: SOUND FIXED! 🔊🔥</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         :root { --blue: #00f2ff; --pink: #ff00ea; --bg: #050505; --card: #121212; --green: #00ff88; --red: #ff4d4d; --fire: #ff6a00; }
@@ -35,7 +35,6 @@
         .btn-main { background: var(--blue); color: black; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         
         .hint-btn { background: #333; color: #ffae00; border: 1px solid #ffae00; padding: 8px 15px; border-radius: 20px; cursor: pointer; margin-bottom: 10px; font-family: 'Orbitron'; font-size: 0.8rem; }
-        .hint-btn:disabled { opacity: 0.3; cursor: not-allowed; }
         #hint-text { color: #ffae00; font-style: italic; margin-top: 5px; font-size: 0.9rem; }
 
         .shake { animation: shake 0.4s; }
@@ -47,10 +46,10 @@
 <div class="container" id="game-container">
     <div id="level-screen">
         <h1 style="color: var(--blue);">👾 GAMER HUB 🕹️</h1>
-        <div id="btn-lvl1" class="level-card unlocked" onclick="startLevel(1)">🛸 LVL 1: GK QUIZ 🧠</div>
-        <div id="btn-lvl2" class="level-card" onclick="startLevel(2)">🎈 LVL 2: JUMBLE 🔠</div>
-        <div id="btn-lvl3" class="level-card" onclick="startLevel(3)">⚽ LVL 3: MATH RUSH 🔢</div>
-        <div id="btn-lvl4" class="level-card" onclick="startLevel(4)">💀 LVL 4: BOSS MODE 🔥</div>
+        <div id="btn-lvl1" class="level-card unlocked" onclick="initAndStart(1)">🛸 LVL 1: GK QUIZ 🧠</div>
+        <div id="btn-lvl2" class="level-card" onclick="initAndStart(2)">🎈 LVL 2: JUMBLE 🔠</div>
+        <div id="btn-lvl3" class="level-card" onclick="initAndStart(3)">⚽ LVL 3: MATH RUSH 🔢</div>
+        <div id="btn-lvl4" class="level-card" onclick="initAndStart(4)">💀 LVL 4: BOSS MODE 🔥</div>
     </div>
 
     <div id="grid-screen" class="hidden">
@@ -76,6 +75,25 @@
 </div>
 
 <script>
+    // --- 🔊 SOUND SYSTEM FIX ---
+    const sounds = {
+        win: new Audio('https://actions.google.com/sounds/v1/cartoon/clime_up_the_ladder.ogg'),
+        lose: new Audio('https://actions.google.com/sounds/v1/cartoon/slide_whistle_to_drum_hit.ogg'),
+        streak: new Audio('https://actions.google.com/sounds/v1/foley/beeps_and_bloops_short.ogg')
+    };
+
+    function playSnd(name) {
+        sounds[name].currentTime = 0;
+        sounds[name].play().catch(e => console.log("Sound blocked by browser."));
+    }
+
+    function initAndStart(l) {
+        // Play an empty sound to "unlock" audio context
+        Object.values(sounds).forEach(s => { s.play(); s.pause(); });
+        startLevel(l);
+    }
+    // --- END SOUND FIX ---
+
     let currentLvl = 1;
     let unlockedLvl = 1;
     let score = 0;
@@ -183,6 +201,7 @@
             hintBox.innerText = "🔎 " + data[currentLvl][currentQIndex].hint;
             hintBox.classList.remove('hidden');
             updateHintButton();
+            playSnd('streak');
         }
     }
 
@@ -210,10 +229,15 @@
         if(isCorrect) {
             if(btn) btn.classList.add('correct');
             score++; streak++;
-            if(streak >= 3) tracker.classList.add('on-fire');
+            playSnd('win');
+            if(streak >= 3) {
+                tracker.classList.add('on-fire');
+                playSnd('streak');
+            }
         } else {
             if(btn) btn.classList.add('wrong');
             streak = 0; tracker.classList.remove('on-fire');
+            playSnd('lose');
             document.getElementById('game-container').classList.add('shake');
             setTimeout(() => document.getElementById('game-container').classList.remove('shake'), 400);
         }
@@ -233,8 +257,8 @@
     }
 
     function backToGrid() {
-        if(score >= 6) { alert("✅ MISSION PASSED!"); showLevels(); }
-        else if(finishedNums.length === 10) { alert("❌ MISSION FAILED!"); startLevel(currentLvl); }
+        if(score >= 6) { showLevels(); }
+        else if(finishedNums.length === 10) { startLevel(currentLvl); }
         else {
             document.getElementById('grid-screen').classList.remove('hidden');
             document.getElementById('play-screen').classList.add('hidden');
