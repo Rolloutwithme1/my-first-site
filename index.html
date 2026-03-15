@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON COMMANDER 🕹️</title>
+    <title>NEON COMMANDER: STREAK EDITION 🔥</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-        :root { --blue: #00f2ff; --pink: #ff00ea; --bg: #050505; --card: #121212; --green: #00ff88; --red: #ff4d4d; }
+        :root { --blue: #00f2ff; --pink: #ff00ea; --bg: #050505; --card: #121212; --green: #00ff88; --red: #ff4d4d; --fire: #ff6a00; }
         body { font-family: 'Orbitron', sans-serif; background: var(--bg); color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow: hidden; }
         
         .container { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--blue); box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); width: 95%; max-width: 500px; text-align: center; position: relative; }
@@ -16,23 +16,27 @@
         .timer-box { width: 100%; height: 10px; background: #222; border-radius: 5px; margin: 15px 0; overflow: hidden; border: 1px solid var(--blue); }
         #timer-fill { height: 100%; width: 100%; background: linear-gradient(to right, var(--blue), var(--pink)); transition: width 1s linear; }
 
-        /* Level & Grid Styles */
-        .level-card { background: #1e1e1e; margin: 10px 0; padding: 15px; border-radius: 10px; border-left: 5px solid var(--pink); cursor: pointer; transition: 0.3s; }
-        .locked { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); }
+        /* Streak & Fire FX */
+        #score-tracker { transition: 0.3s; font-weight: bold; }
+        .on-fire { color: var(--fire) !important; text-shadow: 0 0 10px #ffae00, 0 0 20px #ff6a00, 0 0 30px #ff0000; animation: burn 0.5s infinite alternate; }
+        @keyframes burn { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+        #streak-popup { position: absolute; top: 20%; left: 50%; transform: translate(-50%, -50%); color: var(--fire); font-size: 3rem; font-weight: 900; z-index: 50; pointer-events: none; text-shadow: 0 0 20px var(--fire); animation: pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes pop { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } }
+
+        /* Grid & Buttons */
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; }
         .num-btn { padding: 15px; background: #222; border: 1px solid var(--blue); color: white; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .num-btn.done { border-color: var(--pink); color: var(--pink); opacity: 0.6; }
 
-        /* Game UI */
         .ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
         .ans-btn { padding: 15px; background: #1a1a1a; border: 1px solid #444; color: white; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; }
-        .correct { background: var(--green) !important; color: black !important; box-shadow: 0 0 15px var(--green); }
-        .wrong { background: var(--red) !important; box-shadow: 0 0 15px var(--red); }
+        .correct { background: var(--green) !important; color: black !important; }
+        .wrong { background: var(--red) !important; }
         
         input { width: 80%; padding: 15px; background: #000; border: 2px solid var(--blue); color: white; text-align: center; border-radius: 10px; font-size: 1.2rem; font-family: 'Orbitron'; margin-bottom: 10px;}
-        .btn-main { background: var(--blue); color: black; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-main { background: var(--blue); color: black; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         
-        #feedback-text { font-size: 1.2rem; margin: 10px 0; }
         .shake { animation: shake 0.4s; }
         @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-8px);} 75% {transform: translateX(8px);} }
     </style>
@@ -40,34 +44,34 @@
 <body>
 
 <div class="container" id="game-container">
+    <div id="streak-popup" class="hidden">STREAK!! 🔥</div>
+
     <div id="level-screen">
-        <h1 style="color: var(--blue); text-shadow: 0 0 10px var(--blue);">MISSION CONTROL</h1>
-        <div class="level-card" onclick="startLevel(1)">LVL 1: GK QUIZ 🧠 <span id="l1-s">🔓</span></div>
-        <div class="level-card locked" id="lv2" onclick="startLevel(2)">LVL 2: JUMBLE 🔠 <span id="l2-s">🔒</span></div>
-        <div class="level-card locked" id="lv3" onclick="startLevel(3)">LVL 3: MATH RUSH 🔢 <span id="l3-s">🔒</span></div>
+        <h1 style="color: var(--blue);">MISSION HUB</h1>
+        <div style="background:#1e1e1e; padding:15px; border-radius:10px; border-left:5px solid var(--pink); cursor:pointer;" onclick="startLevel(1)">LVL 1: GK QUIZ 🧠</div>
+        <div id="lv2" style="background:#1e1e1e; padding:15px; border-radius:10px; border-left:5px solid #444; margin-top:10px; opacity:0.5;">LVL 2: JUMBLE (Unlock at 7 pts)</div>
     </div>
 
     <div id="grid-screen" class="hidden">
-        <h2 id="lvl-title">SELECT SECTOR</h2>
+        <h2 id="score-tracker">Score: 0/7</h2>
         <div class="grid" id="number-grid"></div>
-        <p>Target: 7/10 Points</p>
     </div>
 
     <div id="play-screen" class="hidden">
         <div class="timer-box"><div id="timer-fill"></div></div>
-        <h3 id="q-text">Loading...</h3>
+        <h3 id="q-text">Question</h3>
         <div id="game-area"></div>
         <div id="result-overlay" class="hidden">
             <p id="feedback-text"></p>
-            <button class="btn-main" onclick="backToGrid()">NEXT SECTOR</button>
+            <button class="btn-main" onclick="backToGrid()">NEXT</button>
         </div>
     </div>
 </div>
 
 <script>
-    let unlocked = 1;
     let currentLvl = 1;
     let score = 0;
+    let streak = 0;
     let finishedNums = [];
     let timerInterval;
     let timeLeft = 15;
@@ -76,31 +80,22 @@
     const loseSnd = new Audio('https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3');
 
     const data = {
-        1: [ // Quiz
-            { q: "Capital of France?", a: [{t:"Berlin", c:false}, {t:"Paris", c:true}, {t:"Rome", c:false}, {t:"Lyon", c:false}] },
-            { q: "Red Planet?", a: [{t:"Mars", c:true}, {t:"Venus", c:false}, {t:"Earth", c:false}, {t:"Pluto", c:false}] },
-            { q: "Who made iPhone?", a: [{t:"Apple", c:true}, {t:"Sony", c:false}] },
-            { q: "Largest Ocean?", a: [{t:"Pacific", c:true}, {t:"Indian", c:false}] },
-            { q: "Human bones?", a: [{t:"206", c:true}, {t:"300", c:false}] },
-            { q: "Fastest Animal?", a: [{t:"Cheetah", c:true}, {t:"Lion", c:false}] },
-            { q: "H2O is?", a: [{t:"Water", c:true}, {t:"Air", c:false}] },
-            { q: "King of Gods?", a: [{t:"Zeus", c:true}, {t:"Ares", c:false}] },
-            { q: "Sun is a?", a: [{t:"Star", c:true}, {t:"Planet", c:false}] },
-            { q: "7 * 8?", a: [{t:"56", c:true}, {t:"64", c:false}] }
-        ],
-        2: [ // Jumble
-            { c: "ROBLOX", j: "XOLBRO" }, { c: "GAMER", j: "REMAG" }, { c: "PIZZA", j: "ZAPZI" }, { c: "GHOST", j: "SOTHG" }, { c: "SPACE", j: "EPACS" },
-            { c: "APPLE", j: "LPAPE" }, { c: "STORM", j: "MORST" }, { c: "SWORD", j: "ROWDS" }, { c: "PHONE", j: "ONEPH" }, { c: "TIGER", j: "RITEG" }
-        ],
-        3: [ // Math
-            { q: "15 + 15", ans: "30" }, { q: "9 * 3", ans: "27" }, { q: "100 - 25", ans: "75" }, { q: "12 / 2", ans: "6" }, { q: "5 * 5", ans: "25" },
-            { q: "10 + 40", ans: "50" }, { q: "8 * 2", ans: "16" }, { q: "18 / 3", ans: "6" }, { q: "7 + 9", ans: "16" }, { q: "50 * 2", ans: "100" }
+        1: [
+            { q: "Capital of India?", a: [{t:"Delhi", c:true}, {t:"Mumbai", c:false}] },
+            { q: "Red Planet?", a: [{t:"Mars", c:true}, {t:"Venus", c:false}] },
+            { q: "Water formula?", a: [{t:"H2O", c:true}, {t:"CO2", c:false}] },
+            { q: "Biggest Animal?", a: [{t:"Blue Whale", c:true}, {t:"Shark", c:false}] },
+            { q: "Sun is a...?", a: [{t:"Star", c:true}, {t:"Planet", c:false}] },
+            { q: "7 + 3?", a: [{t:"10", c:true}, {t:"21", c:false}] },
+            { q: "Color of sky?", a: [{t:"Blue", c:true}, {t:"Green", c:false}] },
+            { q: "King of Jungle?", a: [{t:"Lion", c:true}, {t:"Tiger", c:false}] },
+            { q: "20 / 4?", a: [{t:"5", c:true}, {t:"4", c:false}] },
+            { q: "Fastest man?", a: [{t:"Usain Bolt", c:true}, {t:"Me", c:false}] }
         ]
     };
 
     function startLevel(l) {
-        if(l > unlocked) return;
-        currentLvl = l; score = 0; finishedNums = [];
+        currentLvl = l; score = 0; streak = 0; finishedNums = [];
         document.getElementById('level-screen').classList.add('hidden');
         document.getElementById('grid-screen').classList.remove('hidden');
         genGrid();
@@ -128,22 +123,15 @@
         finishedNums.push(idx);
         
         const qData = data[currentLvl][idx];
-        document.getElementById('q-text').innerText = qData.q || `UNSCRAMBLE: ${qData.j}`;
+        document.getElementById('q-text').innerText = qData.q;
 
-        if(currentLvl === 1) {
-            const g = document.createElement('div'); g.className = 'ans-grid';
-            qData.a.forEach(opt => {
-                const b = document.createElement('button'); b.className = 'ans-btn';
-                b.innerText = opt.t; b.onclick = () => check(opt.c, b, qData.a);
-                g.appendChild(b);
-            });
-            area.appendChild(g);
-        } else {
-            const inp = document.createElement('input'); inp.id = "ui";
-            const btn = document.createElement('button'); btn.className = "btn-main"; 
-            btn.innerText = "SUBMIT"; btn.onclick = () => check(inp.value.toUpperCase().trim() === (qData.c || qData.ans), null, qData.c || qData.ans);
-            area.appendChild(inp); area.appendChild(btn);
-        }
+        const g = document.createElement('div'); g.className = 'ans-grid';
+        qData.a.forEach(opt => {
+            const b = document.createElement('button'); b.className = 'ans-btn';
+            b.innerText = opt.t; b.onclick = () => check(opt.c, b);
+            g.appendChild(b);
+        });
+        area.appendChild(g);
         startTimer();
     }
 
@@ -155,54 +143,52 @@
         timerInterval = setInterval(() => {
             timeLeft--;
             fill.style.width = (timeLeft / 15 * 100) + '%';
-            if(timeLeft <= 0) { clearInterval(timerInterval); check(false, null, "TIME OUT"); }
+            if(timeLeft <= 0) { clearInterval(timerInterval); check(false, null); }
         }, 1000);
     }
 
-    function check(isCorrect, btn, extra) {
+    function check(isCorrect, btn) {
         clearInterval(timerInterval);
+        const tracker = document.getElementById('score-tracker');
+        
         if(isCorrect) {
             if(btn) btn.classList.add('correct');
-            score++; winSnd.play();
+            score++;
+            streak++;
+            winSnd.play();
+            
+            if(streak >= 3) {
+                tracker.classList.add('on-fire');
+                showStreakPopup();
+            }
         } else {
             if(btn) btn.classList.add('wrong');
+            streak = 0;
+            tracker.classList.remove('on-fire');
             loseSnd.play();
             document.getElementById('game-container').classList.add('shake');
             setTimeout(() => document.getElementById('game-container').classList.remove('shake'), 400);
-            // Auto reveal
-            if(currentLvl === 1) {
-                const btns = document.querySelectorAll('.ans-btn');
-                extra.forEach((o, i) => { if(o.c) btns[i].classList.add('correct'); });
-            }
         }
+
+        tracker.innerText = `Score: ${score}/7 ${streak > 0 ? ' (Combo: ' + streak + ')' : ''}`;
         document.getElementById('result-overlay').classList.remove('hidden');
-        document.getElementById('feedback-text').innerText = isCorrect ? "XP GAINED! ✅" : `FAILED! Correct: ${typeof extra === 'string' ? extra : 'Highlighted'}`;
-        document.getElementById('feedback-text').style.color = isCorrect ? 'var(--green)' : 'var(--red)';
+        document.getElementById('feedback-text').innerText = isCorrect ? "PERFECT! ✅" : "FAILED! ❌";
+        
+        if(score >= 7) {
+            setTimeout(() => { alert("LEVEL CLEARED! MISSION ACCOMPLISHED!"); location.reload(); }, 1000);
+        }
+    }
+
+    function showStreakPopup() {
+        const p = document.getElementById('streak-popup');
+        p.classList.remove('hidden');
+        setTimeout(() => p.classList.add('hidden'), 1000);
     }
 
     function backToGrid() {
-        if(finishedNums.length === 10) {
-            if(score >= 7) {
-                unlocked = Math.max(unlocked, currentLvl + 1);
-                alert(`MISSION SUCCESS! SCORE: ${score}/10`);
-                updateLocks();
-            } else { alert(`MISSION FAILED! Score 7 to pass. You got ${score}`); }
-            document.getElementById('level-screen').classList.remove('hidden');
-            document.getElementById('play-screen').classList.add('hidden');
-        } else {
-            document.getElementById('grid-screen').classList.remove('hidden');
-            document.getElementById('play-screen').classList.add('hidden');
-            genGrid();
-        }
-    }
-
-    function updateLocks() {
-        for(let i=2; i<=3; i++) {
-            if(unlocked >= i) {
-                document.getElementById(`lv${i}`).classList.remove('locked');
-                document.getElementById(`l${i}-s`).innerText = "🔓";
-            }
-        }
+        document.getElementById('grid-screen').classList.remove('hidden');
+        document.getElementById('play-screen').classList.add('hidden');
+        genGrid();
     }
 </script>
 </body>
