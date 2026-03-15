@@ -3,310 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON GAMER HUB 🕹️</title>
+    <title>ULTRA GAMER HUB 🚀</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-
-        :root {
-            --neon-blue: #00f2ff;
-            --neon-pink: #ff00ea;
-            --bg: #050505;
-            --card: #121212;
-            --success: #00ff88;
-            --danger: #ff4d4d;
-        }
-
-        body {
-            font-family: 'Orbitron', sans-serif;
-            background: var(--bg);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
-
-        /* --- VISUAL EFFECTS & ANIMATIONS --- */
-        .container {
-            background: var(--card);
-            padding: 30px;
-            border-radius: 20px;
-            border: 2px solid var(--neon-blue);
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        /* Shake animation for wrong answers */
-        .shake {
-            animation: shake 0.4s ease-in-out;
-            border-color: var(--danger) !important;
-            box-shadow: 0 0 40px var(--danger) !important;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-10px); }
-            40%, 80% { transform: translateX(10px); }
-        }
-
-        /* Pulse for Correct answers */
-        .pulse-success {
-            animation: pulse 0.5s ease;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); border-color: var(--success); }
-            100% { transform: scale(1); }
-        }
-
-        /* Fade in for content */
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        :root { --blue: #00f2ff; --pink: #ff00ea; --bg: #050505; --card: #121212; --green: #00ff88; --red: #ff4d4d; }
+        body { font-family: 'Orbitron', sans-serif; background: var(--bg); color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--blue); box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); width: 95%; max-width: 500px; text-align: center; }
         .hidden { display: none !important; }
-
-        /* HEADER */
-        .header { display: flex; justify-content: space-between; margin-bottom: 20px; color: var(--neon-blue); font-size: 0.9rem;}
-
-        /* BUTTONS */
-        .mode-btn {
-            background: transparent;
-            color: white;
-            border: 2px solid var(--neon-pink);
-            padding: 20px;
-            margin: 10px 0;
-            width: 100%;
-            font-size: 1.1rem;
-            cursor: pointer;
-            border-radius: 12px;
-            transition: 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .mode-btn:hover {
-            background: var(--neon-pink);
-            box-shadow: 0 0 20px var(--neon-pink);
-            transform: scale(1.02);
-        }
-
-        /* GAME ELEMENTS */
-        .q-img { width: 100%; border-radius: 15px; margin: 15px 0; border: 2px solid #333; }
-        .ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
         
-        .ans-btn {
-            padding: 15px;
-            background: #1e1e1e;
-            border: 1px solid #444;
-            color: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-            transition: 0.2s;
-        }
+        /* Level & Grid Styles */
+        .level-card { background: #1e1e1e; margin: 10px 0; padding: 15px; border-radius: 10px; border-left: 5px solid var(--pink); cursor: pointer; transition: 0.3s; position: relative; }
+        .locked { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 20px 0; }
+        .num-btn { padding: 10px; background: #333; border: 1px solid var(--blue); color: white; border-radius: 5px; cursor: pointer; }
+        .num-btn.done { background: var(--blue); color: black; }
+        .num-btn:disabled { opacity: 0.5; cursor: default; }
 
-        .correct { background: var(--success) !important; color: black !important; font-weight: bold; }
-        .wrong { background: var(--danger) !important; color: white !important; }
-
-        input {
-            width: 85%;
-            padding: 15px;
-            background: #000;
-            border: 2px solid var(--neon-blue);
-            color: var(--neon-blue);
-            text-align: center;
-            font-size: 1.5rem;
-            border-radius: 10px;
-            margin-top: 20px;
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        .scrambled { font-size: 2.2rem; color: var(--neon-pink); letter-spacing: 8px; margin: 20px 0; text-shadow: 0 0 10px var(--neon-pink); }
+        /* Game Elements */
+        .ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .ans-btn { padding: 12px; background: #222; border: 1px solid #444; color: white; border-radius: 5px; cursor: pointer; }
+        .correct { background: var(--green) !important; color: black !important; font-weight: bold; }
+        .wrong { background: var(--red) !important; color: white !important; }
+        
+        input { width: 80%; padding: 12px; background: #000; border: 2px solid var(--blue); color: white; text-align: center; border-radius: 10px; font-family: 'Orbitron'; }
+        .btn-main { background: var(--blue); color: black; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        
+        /* Animations */
+        .shake { animation: shake 0.4s; }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
     </style>
 </head>
 <body>
 
-<div class="container" id="main-container">
-    <div id="menu-screen">
-        <h1 style="color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue);">GAMER HUB</h1>
-        <p>CHOOSE YOUR MISSION</p>
-        <button class="mode-btn" onclick="startMode('quiz')">🧠 PRO QUIZ</button>
-        <button class="mode-btn" onclick="startMode('jumble')">🔠 JUMBLE WORD</button>
+<div class="container" id="main-box">
+    <div id="level-screen">
+        <h1 style="color: var(--blue)">GAMER MISSIONS</h1>
+        <div class="level-card" onclick="startLevel(1)">LEVEL 1: GK QUIZ 🧠 <span id="l1-status"></span></div>
+        <div class="level-card locked" id="lv2" onclick="startLevel(2)">LEVEL 2: JUMBLE 🔠 <span id="l2-status">🔒</span></div>
+        <div class="level-card locked" id="lv3" onclick="startLevel(3)">LEVEL 3: MATH RUSH 🔢 <span id="l3-status">🔒</span></div>
+        <div class="level-card locked" id="lv4" onclick="startLevel(4)">LEVEL 4: BOSS MODE 🔥 <span id="l4-status">🔒</span></div>
     </div>
 
-    <div id="game-screen" class="hidden">
-        <div class="header">
-            <span id="lvl-count">LVL: 1/10</span>
-            <span id="score-display">XP: 0</span>
-        </div>
-        
-        <div id="game-content" class="fade-in">
-            <div id="quiz-content">
-                <img id="quiz-image" src="" class="q-img">
-                <h3 id="quiz-question"></h3>
-                <div id="quiz-options" class="ans-grid"></div>
-            </div>
-
-            <div id="jumble-content" class="hidden">
-                <div id="jumble-emoji" style="font-size: 4rem;"></div>
-                <div id="jumble-text" class="scrambled"></div>
-                <input type="text" id="jumble-input" placeholder="GUESS WORD..." autocomplete="off">
-            </div>
-        </div>
-        
-        <p id="feedback" style="font-weight: bold; height: 20px;"></p>
+    <div id="grid-screen" class="hidden">
+        <button onclick="showLevels()" style="float:left; background:none; border:none; color:var(--pink); cursor:pointer;">← BACK</button>
+        <h2 id="mode-title">SELECT QUESTION</h2>
+        <div class="grid" id="number-grid"></div>
+        <p id="progress-text">Score 7 to unlock next level!</p>
     </div>
 
-    <div id="end-screen" class="hidden">
-        <h1 id="result-title">MISSION COMPLETE</h1>
-        <h2 id="final-score" style="color: var(--neon-blue);">XP: 0</h2>
-        <button class="mode-btn" onclick="location.reload()">RESTART HUB</button>
+    <div id="play-screen" class="hidden">
+        <h3 id="question-display">Question?</h3>
+        <div id="game-area"></div>
+        <div id="feedback-area" class="hidden">
+            <p id="feedback-text"></p>
+            <button class="btn-main" onclick="backToGrid()">CONTINUE</button>
+        </div>
     </div>
 </div>
 
 <script>
-    // SOUNDS
+    let unlocked = 1;
+    let currentLevel = 0;
+    let currentScore = 0;
+    let completedInLvl = [];
     const winSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3');
     const loseSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3');
 
-    let currentIdx = 0;
-    let score = 0;
-    let activeMode = '';
+    // Questions Data (10 per Level)
+    const levelData = {
+        1: [ // GK Quiz
+            { q: "Capital of India?", a: [{t:"Mumbai", c:false}, {t:"Delhi", c:true}, {t:"Goa", c:false}, {t:"Pune", c:false}] },
+            { q: "Biggest Planet?", a: [{t:"Mars", c:false}, {t:"Jupiter", c:true}, {t:"Earth", c:false}, {t:"Venus", c:false}] },
+            { q: "Who made iPhone?", a: [{t:"Apple", c:true}, {t:"Sony", c:false}, {t:"Nokia", c:false}, {t:"Google", c:false}] },
+            { q: "7 + 3?", a: [{t:"10", c:true}, {t:"9", c:false}, {t:"11", c:false}, {t:"21", c:false}] },
+            { q: "Water H2O?", a: [{t:"Yes", c:true}, {t:"No", c:false}] },
+            { q: "Color of Grass?", a: [{t:"Blue", c:false}, {t:"Green", c:true}, {t:"Red", c:false}, {t:"Yellow", c:false}] },
+            { q: "King of Jungle?", a: [{t:"Tiger", c:false}, {t:"Lion", c:true}, {t:"Elephant", c:false}, {t:"Bear", c:false}] },
+            { q: "Human Bones?", a: [{t:"206", c:true}, {t:"100", c:false}, {t:"300", c:false}, {t:"50", c:false}] },
+            { q: "Fastest Bird?", a: [{t:"Ostrich", c:false}, {t:"Falcon", c:true}, {t:"Eagle", c:false}, {t:"Crow", c:false}] },
+            { q: "Coldest Place?", a: [{t:"Sahara", c:false}, {t:"Antarctica", c:true}, {t:"India", c:false}, {t:"Brazil", c:false}] }
+        ],
+        2: [ // Jumble
+            { c: "DOG", j: "GDO" }, { c: "CAT", j: "ATC" }, { c: "GAME", j: "EMAG" }, { c: "FISH", j: "HIFS" }, { c: "BIRD", j: "DRBI" },
+            { c: "MOON", j: "NOMO" }, { c: "STAR", j: "RAST" }, { c: "FIRE", j: "RIFE" }, { c: "WATER", j: "TEWRA" }, { c: "KING", j: "GNIK" }
+        ],
+        3: [ // Math
+            { q: "12 + 8", ans: "20" }, { q: "5 * 5", ans: "25" }, { q: "100 / 4", ans: "25" }, { q: "9 - 4", ans: "5" }, { q: "20 * 3", ans: "60" },
+            { q: "50 + 50", ans: "100" }, { q: "11 * 2", ans: "22" }, { q: "15 / 3", ans: "5" }, { q: "7 + 7", ans: "14" }, { q: "10 * 10", ans: "100" }
+        ]
+    };
 
-    const quizData = [
-        { q: "Which planet is the Red Planet?", img: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=400", a: [{t:"Mars", c:true}, {t:"Venus", c:false}, {t:"Saturn", c:false}, {t:"Jupiter", c:false}] },
-        { q: "Who created Bitcoin?", img: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=400", a: [{t:"Satoshi", c:true}, {t:"Musk", c:false}, {t:"Gates", c:false}, {t:"Jobs", c:false}] },
-        { q: "Fastest land animal?", img: "https://images.unsplash.com/photo-1534177714508-8579ee4b6c33?w=400", a: [{t:"Lion", c:false}, {t:"Cheetah", c:true}, {t:"Eagle", c:false}, {t:"Deer", c:false}] },
-        { q: "Game with Master Chief?", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400", a: [{t:"Halo", c:true}, {t:"Doom", c:false}, {t:"CoD", c:false}, {t:"Destiny", c:false}] },
-        { q: "Capital of France?", img: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400", a: [{t:"Paris", c:true}, {t:"Berlin", c:false}, {t:"Rome", c:false}, {t:"Madrid", c:false}] },
-        { q: "Who made iPhone?", img: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=400", a: [{t:"Samsung", c:false}, {t:"Apple", c:true}, {t:"Sony", c:false}, {t:"LG", c:false}] },
-        { q: "What is 5 + 5 * 5?", img: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400", a: [{t:"50", c:false}, {t:"30", c:true}, {t:"25", c:false}, {t:"15", c:false}] },
-        { q: "Largest Ocean?", img: "https://images.unsplash.com/photo-1439405326854-014607f694d7?w=400", a: [{t:"Atlantic", c:false}, {t:"Pacific", c:true}, {t:"Indian", c:false}, {t:"Arctic", c:false}] },
-        { q: "Who painted Mona Lisa?", img: "https://images.unsplash.com/photo-1544767331-1582887493ef?w=400", a: [{t:"Da Vinci", c:true}, {t:"Picasso", c:false}, {t:"Dali", c:false}, {t:"Monet", c:false}] },
-        { q: "Liquid Metal?", img: "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=400", a: [{t:"Gold", c:false}, {t:"Mercury", c:true}, {t:"Lead", c:false}, {t:"Zinc", c:false}] }
-    ];
-
-    const jumbleData = [
-        { c: "PYTHON", j: "THYOPN", e: "🐍" },
-        { c: "GOOGLE", j: "EGOLGO", e: "🔍" },
-        { c: "ROBLOX", j: "XOLBRO", e: "🧱" },
-        { c: "MINECRAFT", j: "FTARCNIEM", e: "⛏️" },
-        { c: "GALAXY", j: "AYXALG", e: "🌌" },
-        { c: "DIAMOND", j: "NOMDAID", e: "💎" },
-        { c: "FORTS", j: "STROF", e: "🏰" },
-        { c: "SPIDERMAN", j: "NAMREDIPS", e: "🕷️" },
-        { c: "HAMBURGER", j: "REGRUBMAH", e: "🍔" },
-        { c: "YOUTUBE", j: "EBTUOUY", e: "📺" }
-    ];
-
-    function startMode(mode) {
-        activeMode = mode;
-        document.getElementById('menu-screen').classList.add('hidden');
-        document.getElementById('game-screen').classList.remove('hidden');
-        loadLevel();
+    function startLevel(lvl) {
+        if(lvl > unlocked) return alert("Unlock previous level first!");
+        currentLevel = lvl;
+        currentScore = 0;
+        completedInLvl = [];
+        showGrid();
     }
 
-    function loadLevel() {
-        if(currentIdx >= 10) return showEnd();
-        
-        // Refresh animation
-        const content = document.getElementById('game-content');
-        content.classList.remove('fade-in');
-        void content.offsetWidth; // Trigger reflow
-        content.classList.add('fade-in');
-
-        document.getElementById('lvl-count').innerText = `LVL: ${currentIdx+1}/10`;
-        document.getElementById('feedback').innerText = "";
-
-        if(activeMode === 'quiz') {
-            const data = quizData[currentIdx];
-            document.getElementById('quiz-image').src = data.img;
-            document.getElementById('quiz-question').innerText = data.q;
-            const options = document.getElementById('quiz-options');
-            options.innerHTML = '';
-            data.a.forEach(ans => {
-                const btn = document.createElement('button');
-                btn.className = 'ans-btn';
-                btn.innerText = ans.t;
-                btn.onclick = () => checkQuiz(btn, ans.c);
-                options.appendChild(btn);
-            });
-        } else {
-            document.getElementById('quiz-content').classList.add('hidden');
-            document.getElementById('jumble-content').classList.remove('hidden');
-            const data = jumbleData[currentIdx];
-            document.getElementById('jumble-text').innerText = data.j;
-            document.getElementById('jumble-emoji').innerText = data.e;
-            document.getElementById('jumble-input').value = '';
-            document.getElementById('jumble-input').focus();
+    function showGrid() {
+        document.getElementById('level-screen').classList.add('hidden');
+        document.getElementById('grid-screen').classList.remove('hidden');
+        document.getElementById('play-screen').classList.add('hidden');
+        const grid = document.getElementById('number-grid');
+        grid.innerHTML = '';
+        for(let i=1; i<=10; i++) {
+            const btn = document.createElement('button');
+            btn.className = completedInLvl.includes(i-1) ? 'num-btn done' : 'num-btn';
+            btn.innerText = i;
+            btn.disabled = completedInLvl.includes(i-1);
+            btn.onclick = () => loadQuestion(i-1);
+            grid.appendChild(btn);
         }
     }
 
-    function checkQuiz(btn, isCorrect) {
-        const container = document.getElementById('main-container');
+    function loadQuestion(idx) {
+        document.getElementById('grid-screen').classList.add('hidden');
+        document.getElementById('play-screen').classList.remove('hidden');
+        document.getElementById('feedback-area').classList.add('hidden');
+        const area = document.getElementById('game-area');
+        area.innerHTML = '';
+        const qData = levelData[currentLevel][idx];
+        document.getElementById('question-display').innerText = qData.q || `Unscramble: ${qData.j}`;
+
+        if(currentLevel === 1) { // Quiz
+            const div = document.createElement('div');
+            div.className = 'ans-grid';
+            qData.a.forEach(ans => {
+                const b = document.createElement('button');
+                b.className = 'ans-btn';
+                b.innerText = ans.t;
+                b.onclick = () => checkQuiz(b, ans.c, qData.a);
+                div.appendChild(b);
+            });
+            area.appendChild(div);
+        } else { // Jumble or Math
+            const input = document.createElement('input');
+            input.id = "user-input";
+            input.placeholder = "Answer here...";
+            const b = document.createElement('button');
+            b.className = "btn-main";
+            b.innerText = "SUBMIT";
+            b.onclick = () => checkInput(input.value, qData.c || qData.ans);
+            area.appendChild(input);
+            area.appendChild(b);
+        }
+        completedInLvl.push(idx);
+    }
+
+    function checkQuiz(btn, isCorrect, allOptions) {
         document.querySelectorAll('.ans-btn').forEach(b => b.disabled = true);
-        
         if(isCorrect) {
             btn.classList.add('correct');
-            container.classList.add('pulse-success');
-            score += 100;
-            winSound.play();
-            setTimeout(() => container.classList.remove('pulse-success'), 500);
+            scorePoint();
         } else {
             btn.classList.add('wrong');
-            container.classList.add('shake');
             loseSound.play();
-            setTimeout(() => container.classList.remove('shake'), 500);
+            allOptions.forEach((o, i) => { if(o.c) document.querySelectorAll('.ans-btn')[i].classList.add('correct'); });
         }
-        updateScore();
-        setTimeout(nextLvl, 1200);
+        showFeedback(isCorrect);
     }
 
-    document.getElementById('jumble-input').addEventListener('keypress', (e) => {
-        if(e.key === 'Enter') {
-            const container = document.getElementById('main-container');
-            const val = e.target.value.toUpperCase();
-            if(val === jumbleData[currentIdx].c) {
-                score += 100;
-                winSound.play();
-                container.classList.add('pulse-success');
-                setTimeout(() => container.classList.remove('pulse-success'), 500);
-            } else {
-                loseSound.play();
-                container.classList.add('shake');
-                setTimeout(() => container.classList.remove('shake'), 500);
+    function checkInput(val, correct) {
+        const isCorrect = val.toUpperCase().trim() === correct.toUpperCase();
+        if(isCorrect) scorePoint();
+        else {
+            loseSound.play();
+            document.getElementById('main-box').classList.add('shake');
+            setTimeout(() => document.getElementById('main-box').classList.remove('shake'), 400);
+        }
+        showFeedback(isCorrect, correct);
+    }
+
+    function scorePoint() {
+        currentScore++;
+        winSound.play();
+    }
+
+    function showFeedback(isCorrect, correctVal) {
+        const f = document.getElementById('feedback-area');
+        f.classList.remove('hidden');
+        document.getElementById('feedback-text').innerText = isCorrect ? "✅ EXCELLENT!" : `❌ WRONG! Correct: ${correctVal || ''}`;
+        document.getElementById('feedback-text').style.color = isCorrect ? 'var(--green)' : 'var(--red)';
+    }
+
+    function backToGrid() {
+        if(completedInLvl.length === 10) {
+            checkLevelPass();
+        } else {
+            showGrid();
+        }
+    }
+
+    function checkLevelPass() {
+        if(currentScore >= 7) {
+            unlocked = Math.max(unlocked, currentLevel + 1);
+            alert(`Level Passed! You scored ${currentScore}/10. Next Level Unlocked!`);
+            updateLockStatus();
+        } else {
+            alert(`Try Again! You need 7 points, you got ${currentScore}.`);
+        }
+        showLevels();
+    }
+
+    function updateLockStatus() {
+        for(let i=2; i<=4; i++) {
+            if(unlocked >= i) {
+                document.getElementById(`lv${i}`).classList.remove('locked');
+                document.getElementById(`l${i}-status`).innerText = "🔓";
             }
-            updateScore();
-            setTimeout(nextLvl, 1200);
         }
-    });
-
-    function nextLvl() {
-        currentIdx++;
-        loadLevel();
     }
 
-    function updateScore() {
-        document.getElementById('score-display').innerText = `XP: ${score}`;
-    }
-
-    function showEnd() {
-        document.getElementById('game-screen').classList.add('hidden');
-        document.getElementById('end-screen').classList.remove('hidden');
-        document.getElementById('final-score').innerText = `TOTAL XP: ${score}`;
+    function showLevels() {
+        document.getElementById('level-screen').classList.remove('hidden');
+        document.getElementById('grid-screen').classList.add('hidden');
+        document.getElementById('play-screen').classList.add('hidden');
     }
 </script>
 </body>
