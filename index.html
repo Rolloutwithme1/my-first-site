@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON COMMANDER: SHUFFLE EDITION 🔀🔥</title>
+    <title>NEON COMMANDER: SKIP & EVOLVE 🚀🔥</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         :root { --blue: #00f2ff; --pink: #ff00ea; --bg: #050505; --card: #121212; --green: #00ff88; --red: #ff4d4d; --fire: #ff6a00; }
@@ -28,16 +28,14 @@
 
         .ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
         .ans-btn { padding: 15px; background: #1a1a1a; border: 1px solid #444; color: white; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; transition: 0.2s; }
-        .ans-btn:hover { border-color: var(--blue); background: #222; }
         .correct { background: var(--green) !important; color: black !important; }
         .wrong { background: var(--red) !important; }
         
-        input { width: 85%; padding: 15px; background: #000; border: 2px solid var(--blue); color: white; text-align: center; border-radius: 10px; font-size: 1.2rem; font-family: 'Orbitron'; margin-bottom: 10px;}
-        .btn-main { background: var(--blue); color: black; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-main { background: var(--blue); color: black; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin: 5px; }
+        .btn-skip { background: #444; color: white; border: 1px solid #777; padding: 12px 25px; border-radius: 8px; cursor: pointer; margin: 5px; }
         
         .hint-btn { background: #333; color: #ffae00; border: 1px solid #ffae00; padding: 8px 15px; border-radius: 20px; cursor: pointer; margin-bottom: 10px; font-family: 'Orbitron'; font-size: 0.8rem; }
         #hint-text { color: #ffae00; font-style: italic; margin-top: 5px; font-size: 0.9rem; }
-
         .shake { animation: shake 0.4s; }
         @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-8px);} 75% {transform: translateX(8px);} }
     </style>
@@ -48,9 +46,9 @@
     <div id="level-screen">
         <h1 style="color: var(--blue);">👾 GAMER HUB 🕹️</h1>
         <div id="btn-lvl1" class="level-card unlocked" onclick="initAndStart(1)">🛸 LVL 1: GK QUIZ 🧠</div>
-        <div id="btn-lvl2" class="level-card" onclick="initAndStart(2)">🎈 LVL 2: JUMBLE 🔠</div>
+        <div id="btn-lvl2" class="level-card" onclick="initAndStart(2)">🍕 LVL 2: EMOJI LOGIC 💡</div>
         <div id="btn-lvl3" class="level-card" onclick="initAndStart(3)">⚽ LVL 3: MATH RUSH 🔢</div>
-        <div id="btn-lvl4" class="level-card" onclick="initAndStart(4)">💀 LVL 4: BOSS MODE 🔥</div>
+        <div id="btn-lvl4" class="level-card" onclick="initAndStart(4)">💀 LVL 4: BOSS RUSH 🔥</div>
     </div>
 
     <div id="grid-screen" class="hidden">
@@ -68,6 +66,9 @@
         <p id="hint-text" class="hidden"></p>
         <h3 id="q-text">Question? 🤔</h3>
         <div id="game-area"></div>
+        <div id="action-bar" style="margin-top:20px;">
+            <button class="btn-skip" onclick="skipSector()">SKIP SECTOR ⏭️</button>
+        </div>
         <div id="result-overlay" class="hidden">
             <p id="feedback-text" style="font-size: 1.5rem; font-weight: bold;"></p>
             <button class="btn-main" onclick="backToGrid()">CONTINUE 🚀</button>
@@ -84,7 +85,7 @@
 
     function playSnd(name) {
         sounds[name].currentTime = 0;
-        sounds[name].play().catch(e => console.log("Sound muted"));
+        sounds[name].play().catch(e => {});
     }
 
     function initAndStart(l) {
@@ -101,40 +102,54 @@
     let finishedNums = [];
     let timerInterval;
 
-    // DATA REMAINS THE SAME...
     const data = {
         1: [
-            { q: "Capital of India? 🇮🇳", hint: "It's in the North, starts with D!", a: [{t:"Delhi", c:true}, {t:"Mumbai", c:false}] },
-            { q: "Red Planet? 🔴", hint: "Think of Elon Musk's goal!", a: [{t:"Mars", c:true}, {t:"Venus", c:false}] },
-            { q: "Sun is a? ☀️", hint: "It twinkles like the others!", a: [{t:"Star", c:true}, {t:"Planet", c:false}] },
-            { q: "King of Jungle? 🦁", hint: "He has a big mane!", a: [{t:"Lion", c:true}, {t:"Tiger", c:false}] },
-            { q: "Water is? 💧", hint: "Two Parts Hydrogen...", a: [{t:"H2O", c:true}, {t:"CO2", c:false}] },
-            { q: "Fastest Bird? 🦅", hint: "It dives like a jet!", a: [{t:"Falcon", c:true}, {t:"Crow", c:false}] },
-            { q: "Largest Ocean? 🌊", hint: "Starts with P, very calm name!", a: [{t:"Pacific", c:true}, {t:"Atlantic", c:false}] },
-            { q: "Bones in Human? 🦴", hint: "More than 200, less than 210!", a: [{t:"206", c:true}, {t:"100", c:false}] },
-            { q: "Apple is a? 🍎", hint: "Grows on trees, sweet!", a: [{t:"Fruit", c:true}, {t:"Veggie", c:false}] },
-            { q: "Moon orbits? 🌙", hint: "Where humans live!", a: [{t:"Earth", c:true}, {t:"Mars", c:false}] }
+            { q: "Capital of India? 🇮🇳", hint: "Starts with D!", a: [{t:"Delhi", c:true}, {t:"Mumbai", c:false}] },
+            { q: "Red Planet? 🔴", hint: "Elon Musk's goal!", a: [{t:"Mars", c:true}, {t:"Venus", c:false}] },
+            { q: "Fastest Animal? 🐆", hint: "It has spots!", a: [{t:"Cheetah", c:true}, {t:"Tiger", c:false}] },
+            { q: "Moon orbits? 🌙", hint: "Where we live!", a: [{t:"Earth", c:true}, {t:"Sun", c:false}] },
+            { q: "H2O is? 💧", hint: "You drink it!", a: [{t:"Water", c:true}, {t:"Milk", c:false}] },
+            { q: "King of Jungle? 🦁", hint: "Big Mane!", a: [{t:"Lion", c:true}, {t:"Bear", c:false}] },
+            { q: "Longest River? 🌊", hint: "In Egypt!", a: [{t:"Nile", c:true}, {t:"Amazon", c:false}] },
+            { q: "Bones in body? 🦴", hint: "20_", a: [{t:"206", c:true}, {t:"210", c:false}] },
+            { q: "Largest Planet? 🪐", hint: "Has a red spot!", a: [{t:"Jupiter", c:true}, {t:"Saturn", c:false}] },
+            { q: "Sun is a? ☀️", hint: "A twinkle...", a: [{t:"Star", c:true}, {t:"Planet", c:false}] }
         ],
         2: [
-            { c: "ROBLOX", j: "XOLBRO 🎮", hint: "Popular blocky game!" }, { c: "PIZZA", j: "ZAPZI 🍕", hint: "Round Italian food!" }, 
-            { c: "GHOST", j: "SOTHG 👻", hint: "Goes Boo!" }, { c: "TIGER", j: "RITEG 🐯", hint: "Striped big cat!" }, 
-            { c: "APPLE", j: "LPAPE 🍎", hint: "iPhone logo!" }, { c: "PHONE", j: "ONEPH 📱", hint: "Used for calling!" }, 
-            { c: "WATER", j: "TEWRA 💧", hint: "You drink this!" }, { c: "SPACE", j: "EPACS 🚀", hint: "Where stars are!" }, 
-            { c: "DANCE", j: "ECNAD 💃", hint: "Moving to music!" }, { c: "MUSIC", j: "CISUM 🎵", hint: "You hear it!" }
+            { q: "🍎 + 🍎 = 10. 🍎 = ?", hint: "10 divided by 2!", a: [{t:"5", c:true}, {t:"10", c:false}] },
+            { q: "🍔 + 🍔 = 20. 🍔 = ?", hint: "Half of 20!", a: [{t:"10", c:true}, {t:"5", c:false}] },
+            { q: "🍦 + 🍎 = 15 (🍎=5). 🍦 = ?", hint: "15 minus 5!", a: [{t:"10", c:true}, {t:"5", c:false}] },
+            { q: "🍕 + 🍕 + 🍕 = 9. 🍕 = ?", hint: "3 times what is 9?", a: [{t:"3", c:true}, {t:"1", c:false}] },
+            { q: "🎈 + 🎈 = 12. 🎈 = ?", hint: "Double 6 is...", a: [{t:"6", c:true}, {t:"12", c:false}] },
+            { q: "🐱 + 🐱 = 4. 🐱 = ?", hint: "Two plus two!", a: [{t:"2", c:true}, {t:"4", c:false}] },
+            { q: "⚡ + ⚡ = 100. ⚡ = ?", hint: "Half of 100!", a: [{t:"50", c:true}, {t:"100", c:false}] },
+            { q: "💎 + 💎 = 10. 💎 = ?", hint: "5 + 5!", a: [{t:"5", c:true}, {t:"10", c:false}] },
+            { q: "🔥 + 🔥 = 14. 🔥 = ?", hint: "Lucky number 7!", a: [{t:"7", c:true}, {t:"14", c:false}] },
+            { q: "👑 + 👑 = 2. 👑 = ?", hint: "The first number!", a: [{t:"1", c:true}, {t:"2", c:false}] }
         ],
         3: [
-            { q: "10 + 10 ➕", ans: "20", hint: "Two tens!" }, { q: "5 * 5 ✖️", ans: "25", hint: "A quarter of 100!" }, 
-            { q: "100 / 2 ➗", ans: "50", hint: "Half a century!" }, { q: "9 - 4 ➖", ans: "5", hint: "High five!" }, 
-            { q: "12 + 12 ➕", ans: "24", hint: "A double dozen!" }, { q: "8 * 2 ✖️", ans: "16", hint: "Age to get a license!" }, 
-            { q: "30 / 3 ➗", ans: "10", hint: "Number of fingers!" }, { q: "7 + 9 ➕", ans: "16", hint: "Same as 8+8!" }, 
-            { q: "11 * 3 ✖️", ans: "33", hint: "Three-Three!" }, { q: "50 - 10 ➖", ans: "40", hint: "A decade before 50!" }
+            { q: "10 * 10 ➕", a: [{t:"100", c:true}, {t:"20", c:false}], hint: "One and two zeros!" },
+            { q: "50 / 2 ➗", a: [{t:"25", c:true}, {t:"52", c:false}], hint: "A quarter of 100!" },
+            { q: "12 + 13 ➖", a: [{t:"25", c:true}, {t:"24", c:false}], hint: "Half of 50!" },
+            { q: "9 * 3 ✖️", a: [{t:"27", c:true}, {t:"21", c:false}], hint: "Almost 30!" },
+            { q: "8 + 8 + 8 ➕", a: [{t:"24", c:true}, {t:"22", c:false}], hint: "Two Dozen!" },
+            { q: "100 - 1 ➖", a: [{t:"99", c:true}, {t:"101", c:false}], hint: "Double 9!" },
+            { q: "4 * 4 ✖️", a: [{t:"16", c:true}, {t:"12", c:false}], hint: "Sweet 16!" },
+            { q: "30 / 5 ➗", a: [{t:"6", c:true}, {t:"5", c:false}], hint: "Half a dozen!" },
+            { q: "7 * 2 ✖️", a: [{t:"14", c:true}, {t:"16", c:false}], hint: "Two weeks!" },
+            { q: "11 + 11 ➕", a: [{t:"22", c:true}, {t:"111", c:false}], hint: "Double 11!" }
         ],
         4: [
-            { q: "12 * 12 💀", ans: "144", hint: "Gross dozen!" }, { q: "Scramble 'DEVIL' 😈", c: "DEVIL", hint: "Opposite of Angel!" }, 
-            { q: "0 + 0? 🌌", ans: "0", hint: "Nothing plus nothing!" }, { q: "Mars Capital? 🛸", a: [{t:"None", c:true}, {t:"Elon City", c:false}], hint: "Is anyone living there yet?" }, 
-            { q: "1000 - 1? 📉", ans: "999", hint: "Biggest 3-digit number!" }, { q: "Scramble 'HACKER' 💻", c: "HACKER", hint: "Codes for bad or good!" }, 
-            { q: "Fire is hot? 🔥", a: [{t:"Yes", c:true}, {t:"No", c:false}], hint: "Don't touch it!" }, { q: "5 * 5 * 0? 🌀", ans: "0", hint: "Multiplying by zero always gives..." }, 
-            { q: "Blue + Yellow? 🧪", a: [{t:"Green", c:true}, {t:"Red", c:false}], hint: "Color of grass!" }, { q: "You won? 🏆", a: [{t:"Yes", c:true}, {t:"No", c:false}], hint: "Pick the happy one!" }
+            { q: "Capital of France? 🇫🇷", a: [{t:"Paris", c:true}, {t:"Lyon", c:false}], hint: "Eiffel Tower!" },
+            { q: "Who painted Mona Lisa? 🎨", a: [{t:"Da Vinci", c:true}, {t:"Picasso", c:false}], hint: "Leonardo!" },
+            { q: "Fastest land animal? 🐆", a: [{t:"Cheetah", c:true}, {t:"Lion", c:false}], hint: "Spots!" },
+            { q: "Biggest mammal? 🐋", a: [{t:"Blue Whale", c:true}, {t:"Elephant", c:false}], hint: "In the ocean!" },
+            { q: "Inventor of Bulb? 💡", a: [{t:"Edison", c:true}, {t:"Tesla", c:false}], hint: "Thomas!" },
+            { q: "Planet with rings? 🪐", a: [{t:"Saturn", c:true}, {t:"Mars", c:false}], hint: "The Ring Lord!" },
+            { q: "Frozen water? 🧊", a: [{t:"Ice", c:true}, {t:"Steam", c:false}], hint: "Cold!" },
+            { q: "Coldest continent? ❄️", a: [{t:"Antarctica", c:true}, {t:"Asia", c:false}], hint: "Penguins!" },
+            { q: "Number of continents? 🌍", a: [{t:"7", c:true}, {t:"5", c:false}], hint: "Lucky 7!" },
+            { q: "Boss Win? 🏆", a: [{t:"YES!", c:true}, {t:"NO!", c:false}], hint: "Click Yes!" }
         ]
     };
 
@@ -160,15 +175,8 @@
         }
     }
 
-    // 🔀 FISHER-YATES SHUFFLE ALGORITHM
     function shuffle(array) {
-        let currentIndex = array.length, randomIndex;
-        while (currentIndex != 0) {
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex--;
-            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
-        }
-        return array;
+        return array.sort(() => Math.random() - 0.5);
     }
 
     function loadQ(idx) {
@@ -176,33 +184,24 @@
         document.getElementById('grid-screen').classList.add('hidden');
         document.getElementById('play-screen').classList.remove('hidden');
         document.getElementById('result-overlay').classList.add('hidden');
+        document.getElementById('action-bar').classList.remove('hidden');
         document.getElementById('hint-text').classList.add('hidden');
         updateHintButton();
         
         const area = document.getElementById('game-area');
         area.innerHTML = '';
-        finishedNums.push(idx);
         
         const qData = data[currentLvl][idx];
-        document.getElementById('q-text').innerText = qData.q || `UNSCRAMBLE: ${qData.j}`;
+        document.getElementById('q-text').innerText = qData.q;
         
-        if(qData.a) {
-            // SHUFFLE OPTIONS BEFORE BUILDING BUTTONS
-            const shuffledOptions = shuffle([...qData.a]); 
-            const g = document.createElement('div'); g.className = 'ans-grid';
-            shuffledOptions.forEach(opt => {
-                const b = document.createElement('button'); b.className = 'ans-btn';
-                b.innerText = opt.t; b.onclick = () => check(opt.c, b);
-                g.appendChild(b);
-            });
-            area.appendChild(g);
-        } else {
-            const inp = document.createElement('input'); inp.id = "user-inp";
-            inp.placeholder = "Answer... ✍️";
-            const b = document.createElement('button'); b.className = "btn-main"; 
-            b.innerText = "🚀 SUBMIT"; b.onclick = () => check(inp.value.toUpperCase().trim() === (qData.c || qData.ans), null);
-            area.appendChild(inp); area.appendChild(b);
-        }
+        const shuffledOptions = shuffle([...qData.a]); 
+        const g = document.createElement('div'); g.className = 'ans-grid';
+        shuffledOptions.forEach(opt => {
+            const b = document.createElement('button'); b.className = 'ans-btn';
+            b.innerText = opt.t; b.onclick = () => check(opt.c, b);
+            g.appendChild(b);
+        });
+        area.appendChild(g);
         startTimer();
     }
 
@@ -224,28 +223,26 @@
     }
 
     function startTimer() {
-        let t = (currentLvl === 4) ? 5 : 15;
+        let t = 12;
         const fill = document.getElementById('timer-fill');
         fill.style.width = '100%';
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
             t--;
-            fill.style.width = (t / (currentLvl === 4 ? 5 : 15) * 100) + '%';
+            fill.style.width = (t / 12 * 100) + '%';
             if(t <= 0) { clearInterval(timerInterval); check(false, null); }
         }, 1000);
     }
 
     function check(isCorrect, btn) {
         clearInterval(timerInterval);
+        finishedNums.push(currentQIndex); // Mark as done
         const tracker = document.getElementById('score-tracker');
         if(isCorrect) {
             if(btn) btn.classList.add('correct');
             score++; streak++;
             playSnd('win');
-            if(streak >= 3) {
-                tracker.classList.add('on-fire');
-                playSnd('streak');
-            }
+            if(streak >= 3) { tracker.classList.add('on-fire'); playSnd('streak'); }
         } else {
             if(btn) btn.classList.add('wrong');
             streak = 0; tracker.classList.remove('on-fire');
@@ -255,12 +252,22 @@
         }
         tracker.innerText = `💎 Score: ${score}/6 ${streak > 0 ? '🔥' + streak : ''}`;
         document.getElementById('result-overlay').classList.remove('hidden');
+        document.getElementById('action-bar').classList.add('hidden');
         document.getElementById('feedback-text').innerText = isCorrect ? "SUCCESS! ✨" : "MISS! ❌";
         document.getElementById('feedback-text').style.color = isCorrect ? 'var(--green)' : 'var(--red)';
-        if(score === 6) {
+        
+        if(score >= 6) {
             unlockedLvl = Math.max(unlockedLvl, currentLvl + 1);
             document.getElementById(`btn-lvl${unlockedLvl}`).classList.add('unlocked');
         }
+    }
+
+    function skipSector() {
+        clearInterval(timerInterval);
+        // Don't mark as finished, just go back
+        document.getElementById('grid-screen').classList.remove('hidden');
+        document.getElementById('play-screen').classList.add('hidden');
+        genGrid();
     }
 
     function showLevels() {
@@ -269,8 +276,8 @@
     }
 
     function backToGrid() {
-        if(score >= 6) { showLevels(); }
-        else if(finishedNums.length === 10) { startLevel(currentLvl); }
+        if(score >= 6) { alert("✅ LEVEL PASSED!"); showLevels(); }
+        else if(finishedNums.length === 10) { alert("❌ OUT OF SECTORS! RESTARTING..."); startLevel(currentLvl); }
         else {
             document.getElementById('grid-screen').classList.remove('hidden');
             document.getElementById('play-screen').classList.add('hidden');
