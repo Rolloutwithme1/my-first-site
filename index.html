@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON COMMANDER: PEXELS & MATH</title>
+    <title>NEON COMMANDER: REWARDS EDITION</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         :root { --blue: #00f2ff; --pink: #ff00ea; --bg: #050505; --card: #121212; --green: #00ff88; --red: #ff4d4d; }
@@ -12,21 +12,20 @@
         .hidden { display: none !important; }
         .timer-box { width: 100%; height: 10px; background: #222; border-radius: 10px; margin: 15px 0; overflow: hidden; }
         #timer-fill { height: 100%; width: 100%; background: linear-gradient(to right, var(--pink), var(--blue)); transition: width 1s linear; }
-        .level-card { background: #1e1e1e; margin: 10px 0; padding: 20px; border-radius: 12px; border-left: 6px solid #444; cursor: pointer; opacity: 0.5; }
+        .level-card { background: #1e1e1e; margin: 10px 0; padding: 20px; border-radius: 12px; border-left: 6px solid #444; cursor: pointer; opacity: 0.5; transition: 0.3s; }
         .unlocked { opacity: 1; border-left-color: var(--pink); border-right: 1px solid var(--blue); }
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; }
         .num-btn { padding: 15px 5px; background: #222; border: 1px solid var(--blue); color: white; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .num-btn.done { border-color: var(--pink); color: var(--pink); opacity: 0.4; pointer-events: none; }
-        .rebus-ui { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 20px 0; }
-        .rebus-img { width: 115px; height: 115px; object-fit: cover; border: 2px solid var(--pink); border-radius: 12px; background: #111; }
-        .plus { font-size: 2rem; color: var(--blue); }
+        .rebus-ui { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 15px 0; }
+        .rebus-img { width: 115px; height: 115px; object-fit: cover; border: 2px solid var(--pink); border-radius: 12px; }
         .ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
         .ans-btn { padding: 15px; background: #1a1a1a; border: 1px solid #444; color: white; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; }
         .correct { background: var(--green) !important; color: black !important; }
         .wrong { background: var(--red) !important; }
         .btn-main { background: var(--blue); color: black; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .btn-skip-lvl { background: var(--red); color: white; padding: 10px; border: none; border-radius: 8px; width: 100%; cursor: pointer; font-family: 'Orbitron'; margin-top: 10px; }
-        #q-text { font-size: 1.2rem; min-height: 40px; margin: 10px 0; }
+        .btn-skip-lvl { background: #333; color: #aaa; padding: 10px; border: 1px solid #444; border-radius: 8px; width: 100%; cursor: pointer; font-family: 'Orbitron'; margin-top: 10px; font-size: 0.7rem; }
+        #summary-screen h2 { color: var(--green); text-shadow: 0 0 10px var(--green); }
     </style>
 </head>
 <body>
@@ -36,8 +35,8 @@
         <h1 style="color: var(--blue);">NEON HUB</h1>
         <div id="btn-lvl1" class="level-card unlocked" onclick="startLvl(1)">LVL 1: GK QUIZ</div>
         <div id="btn-lvl2" class="level-card" onclick="startLvl(2)">LVL 2: JUMBLED</div>
-        <div id="btn-lvl3" class="level-card" onclick="startLvl(3)">LVL 3: PEXELS REBUS 🧩</div>
-        <div id="btn-lvl4" class="level-card" onclick="startLvl(4)">LVL 4: MATH BOSS ⚡</div>
+        <div id="btn-lvl3" class="level-card" onclick="startLvl(3)">LVL 3: PEXELS REBUS</div>
+        <div id="btn-lvl4" class="level-card" onclick="startLvl(4)">LVL 4: MATH BOSS 🔥</div>
     </div>
 
     <div id="grid-screen" class="hidden">
@@ -46,7 +45,7 @@
             <h2 id="score-tracker">💎 0/6</h2>
         </div>
         <div class="grid" id="sector-grid"></div>
-        <button class="btn-skip-lvl" onclick="forceUnlock()">⏩ SKIP LEVEL</button>
+        <button class="btn-skip-lvl" onclick="forceSkip()">⏩ SKIP LEVEL (NO BONUS)</button>
     </div>
 
     <div id="play-screen" class="hidden">
@@ -55,63 +54,30 @@
         <div id="game-area"></div>
         <div id="result-ui" class="hidden">
             <p id="feedback-text"></p>
-            <button class="btn-main" onclick="backToGrid()">CONTINUE</button>
+            <button class="btn-main" id="continue-btn" onclick="backToGrid()">NEXT</button>
         </div>
+    </div>
+
+    <div id="summary-screen" class="hidden">
+        <h2>LEVEL COMPLETE!</h2>
+        <p id="summary-msg" style="font-size: 1.5rem; margin: 20px 0;"></p>
+        <button class="btn-main" onclick="showHome()">BACK TO HUB</button>
     </div>
 </div>
 
 <script>
     let currentLvl = 1, unlockedLvl = 1, score = 0, finishedSectors = [], timerInterval;
 
-    // Helper to get Pexels Image by specific ID
     const px = (id) => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=300`;
 
     const gameData = {
-        1: [ // GK
-            { q: "Which planet is 'Blue'?", a: [{t:"Earth", c:true}, {t:"Mars", c:false}] },
-            { q: "Is a Diamond a rock?", a: [{t:"Yes", c:true}, {t:"No", c:false}] },
-            { q: "Gravity on Moon is...?", a: [{t:"Lower", c:true}, {t:"Higher", c:false}] },
-            { q: "Capital of France?", a: [{t:"Paris", c:true}, {t:"London", c:false}] },
-            { q: "Water boils at?", a: [{t:"100°C", c:true}, {t:"50°C", c:false}] },
-            { q: "Longest River?", a: [{t:"Nile", c:true}, {t:"Amazon", c:false}] },
-            { q: "Sun is a...?", a: [{t:"Star", c:true}, {t:"Planet", c:false}] },
-            { q: "Speed of Light?", a: [{t:"Fastest", c:true}, {t:"Slowest", c:false}] },
-            { q: "Humans have 2...?", a: [{t:"Eyes", c:true}, {t:"Noses", c:false}] },
-            { q: "King of Chess?", a: [{t:"King", c:true}, {t:"Queen", c:false}] }
-        ],
-        2: [ // Jumbled
-            { q: "XOLBRO", ans: "ROBLOX" }, { q: "ZAPZI", ans: "PIZZA" }, { q: "SOTHG", ans: "GHOST" },
-            { q: "EPACS", ans: "SPACE" }, { q: "LPAPE", ans: "APPLE" }, { q: "RITEG", ans: "TIGER" },
-            { q: "ONEPH", ans: "PHONE" }, { q: "TEWRA", ans: "WATER" }, { q: "ECNAD", ans: "DANCE" },
-            { q: "CISUM", ans: "MUSIC" }
-        ],
-        3: [ // Level 3: Rebus using Pexels IDs
-            { i1: px(459451), i2: px(1262304), ans: "RAINBOW", opts: ["RAINBOW", "SUNSET"] },
-            { i1: px(1124443), i2: px(164666), ans: "KEYBOARD", opts: ["KEYBOARD", "PIANO"] },
-            { i1: px(103127), i2: px(46735), ans: "FOOTBALL", opts: ["FOOTBALL", "BASKETBALL"] },
-            { i1: px(4062274), i2: px(1028714), ans: "PANCAKE", opts: ["PANCAKE", "WAFFLE"] },
-            { i1: px(1051544), i2: px(1172105), ans: "FIREFLY", opts: ["FIREFLY", "LIGHTBULB"] },
-            { i1: px(298611), i2: px(4114920), ans: "TOOTHPASTE", opts: ["TOOTHPASTE", "DENTIST"] },
-            { i1: px(1379636), i2: px(132468), ans: "SUNFLOWER", opts: ["SUNFLOWER", "DAISY"] },
-            { i1: px(1170986), i2: px(143580), ans: "CATWALK", opts: ["CATWALK", "SIDEWALK"] },
-            { i1: px(733475), i2: px(346618), ans: "SNOWMAN", opts: ["SNOWMAN", "ICEBERG"] },
-            { i1: px(335257), i2: px(1413412), ans: "EARRING", opts: ["EARRING", "JEWELRY"] }
-        ],
-        4: [ // Math Boss
-            { q: "12 + 15", a: [{t:"27", c:true}, {t:"25", c:false}] },
-            { q: "8 x 7", a: [{t:"56", c:true}, {t:"54", c:false}] },
-            { q: "100 - 37", a: [{t:"63", c:true}, {t:"73", c:false}] },
-            { q: "9 x 9", a: [{t:"81", c:true}, {t:"72", c:false}] },
-            { q: "14 + 19", a: [{t:"33", c:true}, {t:"31", c:false}] },
-            { q: "6 x 12", a: [{t:"72", c:true}, {t:"62", c:false}] },
-            { q: "150 - 75", a: [{t:"75", c:true}, {t:"85", c:false}] },
-            { q: "25 x 4", a: [{t:"100", c:true}, {t:"125", c:false}] },
-            { q: "(10 x 2) + 5", a: [{t:"25", c:true}, {t:"20", c:false}] },
-            { q: "64 / 8", a: [{t:"8", c:true}, {t:"6", c:false}] }
-        ]
+        1: [ { q: "Sky color?", a: [{t:"Blue", c:true}, {t:"Green", c:false}] }, { q: "Fire is?", a: [{t:"Hot", c:true}, {t:"Cold", c:false}] }, { q: "2+2?", a: [{t:"4", c:true}, {t:"5", c:false}] }, { q: "Grass is?", a: [{t:"Green", c:true}, {t:"Blue", c:false}] }, { q: "Birds...", a: [{t:"Fly", c:true}, {t:"Swim", c:false}] }, { q: "Fish...", a: [{t:"Swim", c:true}, {t:"Fly", c:false}] }, { q: "Sugar is?", a: [{t:"Sweet", c:true}, {t:"Salty", c:false}] }, { q: "Moon is seen at?", a: [{t:"Night", c:true}, {t:"Day", c:false}] }, { q: "A Cat...", a: [{t:"Meows", c:true}, {t:"Barks", c:false}] }, { q: "Cars have 4...?", a: [{t:"Wheels", c:true}, {t:"Wings", c:false}] } ],
+        2: [ { q: "XOLBRO", ans: "ROBLOX" }, { q: "ZAPZI", ans: "PIZZA" }, { q: "SOTHG", ans: "GHOST" }, { q: "EPACS", ans: "SPACE" }, { q: "LPAPE", ans: "APPLE" }, { q: "RITEG", ans: "TIGER" }, { q: "ONEPH", ans: "PHONE" }, { q: "TEWRA", ans: "WATER" }, { q: "ECNAD", ans: "DANCE" }, { q: "CISUM", ans: "MUSIC" } ],
+        3: [ { i1: px(459451), i2: px(1262304), ans: "RAINBOW", opts: ["RAINBOW", "SUNSET"] }, { i1: px(1124443), i2: px(164666), ans: "KEYBOARD", opts: ["KEYBOARD", "PIANO"] }, { i1: px(103127), i2: px(46735), ans: "FOOTBALL", opts: ["FOOTBALL", "BASKETBALL"] }, { i1: px(4062274), i2: px(1028714), ans: "PANCAKE", opts: ["PANCAKE", "WAFFLE"] }, { i1: px(1051544), i2: px(1172105), ans: "FIREFLY", opts: ["FIREFLY", "LIGHTBULB"] }, { i1: px(298611), i2: px(4114920), ans: "TOOTHPASTE", opts: ["TOOTHPASTE", "DENTIST"] }, { i1: px(1379636), i2: px(132468), ans: "SUNFLOWER", opts: ["SUNFLOWER", "DAISY"] }, { i1: px(1170986), i2: px(143580), ans: "CATWALK", opts: ["CATWALK", "SIDEWALK"] }, { i1: px(733475), i2: px(346618), ans: "SNOWMAN", opts: ["SNOWMAN", "ICEBERG"] }, { i1: px(335257), i2: px(1413412), ans: "EARRING", opts: ["EARRING", "JEWELRY"] } ],
+        4: [ { q: "12 + 15", a: [{t:"27", c:true}, {t:"25", c:false}] }, { q: "8 x 7", a: [{t:"56", c:true}, {t:"54", c:false}] }, { q: "100 - 37", a: [{t:"63", c:true}, {t:"73", c:false}] }, { q: "9 x 9", a: [{t:"81", c:true}, {t:"72", c:false}] }, { q: "14 + 19", a: [{t:"33", c:true}, {t:"31", c:false}] }, { q: "6 x 12", a: [{t:"72", c:true}, {t:"62", c:false}] }, { q: "150 - 75", a: [{t:"75", c:true}, {t:"85", c:false}] }, { q: "25 x 4", a: [{t:"100", c:true}, {t:"125", c:false}] }, { q: "(10 x 2) + 5", a: [{t:"25", c:true}, {t:"20", c:false}] }, { q: "64 / 8", a: [{t:"8", c:true}, {t:"6", c:false}] } ]
     };
 
-    function startLvl(l) { if(l > unlockedLvl) return; currentLvl = l; score = 0; finishedSectors = []; document.getElementById('level-screen').classList.add('hidden'); document.getElementById('grid-screen').classList.remove('hidden'); updateGrid(); }
+    function startLvl(l) { if(l > unlockedLvl) return; currentLvl = l; score = 0; finishedSectors = []; document.getElementById('level-screen').classList.add('hidden'); document.getElementById('grid-screen').classList.remove('hidden'); document.getElementById('summary-screen').classList.add('hidden'); updateGrid(); }
 
     function updateGrid() {
         const grid = document.getElementById('sector-grid'); grid.innerHTML = '';
@@ -126,32 +92,23 @@
         document.getElementById('grid-screen').classList.add('hidden');
         document.getElementById('play-screen').classList.remove('hidden');
         document.getElementById('result-ui').classList.add('hidden');
-        const area = document.getElementById('game-area'); area.innerHTML = '';
-        const qData = gameData[currentLvl][idx];
+        const area = document.getElementById('game-area'), qData = gameData[currentLvl][idx];
+        area.innerHTML = '';
 
         if(currentLvl === 3) {
-            document.getElementById('q-text').innerText = "Identify the Combined Concept:";
-            area.innerHTML = `
-                <div class="rebus-ui">
-                    <img src="${qData.i1}" class="rebus-img" alt="Rebus Part 1">
-                    <div class="plus">+</div>
-                    <img src="${qData.i2}" class="rebus-img" alt="Rebus Part 2">
-                </div>
-            `;
-            const shuffled = [...qData.opts].sort(() => Math.random() - 0.5);
+            document.getElementById('q-text').innerText = "COMBINE:";
+            area.innerHTML = `<div class="rebus-ui"><img src="${qData.i1}" class="rebus-img"> <div style="font-size:2rem">+</div> <img src="${qData.i2}" class="rebus-img"></div>`;
             const g = document.createElement('div'); g.className = 'ans-grid';
-            shuffled.forEach(t => {
-                const b = document.createElement('button'); b.className = 'ans-btn'; b.innerText = t;
-                b.onclick = () => check(t === qData.ans, b, idx); g.appendChild(b);
+            [...qData.opts].sort(() => Math.random() - 0.5).forEach(t => {
+                const b = document.createElement('button'); b.className = 'ans-btn'; b.innerText = t; b.onclick = () => check(t === qData.ans, b, idx); g.appendChild(b);
             });
             area.appendChild(g);
         } else {
             document.getElementById('q-text').innerText = (currentLvl === 4) ? `SOLVE: ${qData.q}` : qData.q;
-            const shuffled = [...qData.a].sort(() => Math.random() - 0.5);
             const g = document.createElement('div'); g.className = 'ans-grid';
-            shuffled.forEach(opt => {
-                const b = document.createElement('button'); b.className = 'ans-btn'; b.innerText = opt.t;
-                b.onclick = () => check(opt.c, b, idx); g.appendChild(b);
+            const choices = qData.a ? qData.a : [{t:qData.ans, c:true}, {t:"WRONG", c:false}];
+            [...choices].sort(() => Math.random() - 0.5).forEach(opt => {
+                const b = document.createElement('button'); b.className = 'ans-btn'; b.innerText = opt.t; b.onclick = () => check(opt.c, b, idx); g.appendChild(b);
             });
             area.appendChild(g);
         }
@@ -173,13 +130,37 @@
         if(correct) { if(btn) btn.classList.add('correct'); score++; } 
         else { if(btn) btn.classList.add('wrong'); }
         document.getElementById('result-ui').classList.remove('hidden');
-        document.getElementById('feedback-text').innerText = correct ? "SUCCESS! ✨" : "FAILED! ❌";
-        if(score >= 6) { unlockedLvl = Math.max(unlockedLvl, currentLvl + 1); }
+        document.getElementById('feedback-text').innerText = correct ? "WIN! ✨" : "LOST! ❌";
+        
+        if(finishedSectors.length === 10) {
+            document.getElementById('continue-btn').onclick = finishLevel;
+        }
     }
 
-    function forceUnlock() { unlockedLvl = Math.min(4, currentLvl + 1); showHome(); }
+    function finishLevel() {
+        document.getElementById('play-screen').classList.add('hidden');
+        document.getElementById('summary-screen').classList.remove('hidden');
+        if(score >= 6) { 
+            unlockedLvl = Math.max(unlockedLvl, currentLvl + 1);
+            document.getElementById('summary-msg').innerText = `Good Job! Only took ${score} points.`;
+        } else {
+            document.getElementById('summary-msg').innerText = `Try Again! You only got ${score} points. (Need 6)`;
+        }
+    }
+
+    function forceSkip() {
+        unlockedLvl = Math.min(4, currentLvl + 1);
+        showHome();
+    }
+
     function backToGrid() { document.getElementById('grid-screen').classList.remove('hidden'); document.getElementById('play-screen').classList.add('hidden'); updateGrid(); }
-    function showHome() { document.getElementById('level-screen').classList.remove('hidden'); document.getElementById('grid-screen').classList.add('hidden'); document.getElementById('play-screen').classList.add('hidden'); document.querySelectorAll('.level-card').forEach((c,i)=> i < unlockedLvl ? c.classList.add('unlocked') : null); }
+    
+    function showHome() {
+        document.getElementById('level-screen').classList.remove('hidden');
+        document.getElementById('grid-screen').classList.add('hidden');
+        document.getElementById('summary-screen').classList.add('hidden');
+        document.querySelectorAll('.level-card').forEach((c,i)=> i < unlockedLvl ? c.classList.add('unlocked') : null);
+    }
 </script>
 </body>
 </html>
