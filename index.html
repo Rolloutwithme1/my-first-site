@@ -3,49 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON COMMANDER: REWARDS EDITION</title>
+    <title>NEON COMMANDER: SVG EDITION</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         :root { --blue: #00f2ff; --pink: #ff00ea; --bg: #050505; --card: #121212; --green: #00ff88; --red: #ff4d4d; }
         body { font-family: 'Orbitron', sans-serif; background: var(--bg); color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow: hidden; }
-        .container { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--blue); width: 95%; max-width: 500px; text-align: center; position: relative; }
+        .container { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--blue); width: 95%; max-width: 500px; text-align: center; }
         .hidden { display: none !important; }
         .timer-box { width: 100%; height: 10px; background: #222; border-radius: 10px; margin: 15px 0; overflow: hidden; }
         #timer-fill { height: 100%; width: 100%; background: linear-gradient(to right, var(--pink), var(--blue)); transition: width 1s linear; }
-        .level-card { background: #1e1e1e; margin: 10px 0; padding: 20px; border-radius: 12px; border-left: 6px solid #444; cursor: pointer; opacity: 0.5; transition: 0.3s; }
+        .level-card { background: #1e1e1e; margin: 10px 0; padding: 20px; border-radius: 12px; border-left: 6px solid #444; cursor: pointer; opacity: 0.5; }
         .unlocked { opacity: 1; border-left-color: var(--pink); border-right: 1px solid var(--blue); }
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; }
-        .num-btn { padding: 15px 5px; background: #222; border: 1px solid var(--blue); color: white; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .num-btn { padding: 15px 5px; background: #222; border: 1px solid var(--blue); color: white; border-radius: 8px; cursor: pointer; }
         .num-btn.done { border-color: var(--pink); color: var(--pink); opacity: 0.4; pointer-events: none; }
-        .rebus-ui { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 15px 0; }
-        .rebus-img { width: 115px; height: 115px; object-fit: cover; border: 2px solid var(--pink); border-radius: 12px; }
+        .rebus-ui { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 20px 0; }
+        .icon-box { width: 100px; height: 100px; background: #1a1a1a; border: 2px solid var(--pink); border-radius: 15px; display: flex; align-items: center; justify-content: center; }
+        svg { width: 60px; height: 60px; fill: var(--blue); }
         .ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
         .ans-btn { padding: 15px; background: #1a1a1a; border: 1px solid #444; color: white; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; }
         .correct { background: var(--green) !important; color: black !important; }
         .wrong { background: var(--red) !important; }
         .btn-main { background: var(--blue); color: black; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .btn-skip-lvl { background: #333; color: #aaa; padding: 10px; border: 1px solid #444; border-radius: 8px; width: 100%; cursor: pointer; font-family: 'Orbitron'; margin-top: 10px; font-size: 0.7rem; }
-        #summary-screen h2 { color: var(--green); text-shadow: 0 0 10px var(--green); }
+        .btn-skip { background: transparent; color: #555; border: 1px solid #333; padding: 8px; width: 100%; border-radius: 8px; cursor: pointer; margin-top: 10px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="level-screen">
+    <div id="home-screen">
         <h1 style="color: var(--blue);">NEON HUB</h1>
-        <div id="btn-lvl1" class="level-card unlocked" onclick="startLvl(1)">LVL 1: GK QUIZ</div>
+        <div id="btn-lvl1" class="level-card unlocked" onclick="startLvl(1)">LVL 1: BASICS</div>
         <div id="btn-lvl2" class="level-card" onclick="startLvl(2)">LVL 2: JUMBLED</div>
-        <div id="btn-lvl3" class="level-card" onclick="startLvl(3)">LVL 3: PEXELS REBUS</div>
-        <div id="btn-lvl4" class="level-card" onclick="startLvl(4)">LVL 4: MATH BOSS 🔥</div>
+        <div id="btn-lvl3" class="level-card" onclick="startLvl(3)">LVL 3: SVG REBUS</div>
+        <div id="btn-lvl4" class="level-card" onclick="startLvl(4)">LVL 4: BOSS MATH</div>
     </div>
 
     <div id="grid-screen" class="hidden">
-        <div style="display:flex; justify-content: space-between; align-items: center;">
-            <button onclick="showHome()" style="color:var(--pink); background:none; border:none; cursor:pointer;">🔙</button>
-            <h2 id="score-tracker">💎 0/6</h2>
-        </div>
+        <h2 id="score-tracker">💎 0/6</h2>
         <div class="grid" id="sector-grid"></div>
-        <button class="btn-skip-lvl" onclick="forceSkip()">⏩ SKIP LEVEL (NO BONUS)</button>
+        <button class="btn-skip" onclick="skipLevel()">SKIP LEVEL (NO BONUS)</button>
     </div>
 
     <div id="play-screen" class="hidden">
@@ -54,36 +51,54 @@
         <div id="game-area"></div>
         <div id="result-ui" class="hidden">
             <p id="feedback-text"></p>
-            <button class="btn-main" id="continue-btn" onclick="backToGrid()">NEXT</button>
+            <button class="btn-main" id="next-btn" onclick="nextAction()">CONTINUE</button>
         </div>
     </div>
 
     <div id="summary-screen" class="hidden">
-        <h2>LEVEL COMPLETE!</h2>
-        <p id="summary-msg" style="font-size: 1.5rem; margin: 20px 0;"></p>
-        <button class="btn-main" onclick="showHome()">BACK TO HUB</button>
+        <h2 style="color: var(--green);">LEVEL OVER</h2>
+        <p id="summary-msg" style="font-size: 1.2rem; margin: 20px 0;"></p>
+        <button class="btn-main" onclick="backToHome()">RETURN TO HUB</button>
     </div>
 </div>
 
 <script>
-    let currentLvl = 1, unlockedLvl = 1, score = 0, finishedSectors = [], timerInterval;
+    let currentLvl = 1, unlockedLvl = 1, score = 0, finishedCount = 0, timerInterval;
 
-    const px = (id) => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=300`;
-
-    const gameData = {
-        1: [ { q: "Sky color?", a: [{t:"Blue", c:true}, {t:"Green", c:false}] }, { q: "Fire is?", a: [{t:"Hot", c:true}, {t:"Cold", c:false}] }, { q: "2+2?", a: [{t:"4", c:true}, {t:"5", c:false}] }, { q: "Grass is?", a: [{t:"Green", c:true}, {t:"Blue", c:false}] }, { q: "Birds...", a: [{t:"Fly", c:true}, {t:"Swim", c:false}] }, { q: "Fish...", a: [{t:"Swim", c:true}, {t:"Fly", c:false}] }, { q: "Sugar is?", a: [{t:"Sweet", c:true}, {t:"Salty", c:false}] }, { q: "Moon is seen at?", a: [{t:"Night", c:true}, {t:"Day", c:false}] }, { q: "A Cat...", a: [{t:"Meows", c:true}, {t:"Barks", c:false}] }, { q: "Cars have 4...?", a: [{t:"Wheels", c:true}, {t:"Wings", c:false}] } ],
-        2: [ { q: "XOLBRO", ans: "ROBLOX" }, { q: "ZAPZI", ans: "PIZZA" }, { q: "SOTHG", ans: "GHOST" }, { q: "EPACS", ans: "SPACE" }, { q: "LPAPE", ans: "APPLE" }, { q: "RITEG", ans: "TIGER" }, { q: "ONEPH", ans: "PHONE" }, { q: "TEWRA", ans: "WATER" }, { q: "ECNAD", ans: "DANCE" }, { q: "CISUM", ans: "MUSIC" } ],
-        3: [ { i1: px(459451), i2: px(1262304), ans: "RAINBOW", opts: ["RAINBOW", "SUNSET"] }, { i1: px(1124443), i2: px(164666), ans: "KEYBOARD", opts: ["KEYBOARD", "PIANO"] }, { i1: px(103127), i2: px(46735), ans: "FOOTBALL", opts: ["FOOTBALL", "BASKETBALL"] }, { i1: px(4062274), i2: px(1028714), ans: "PANCAKE", opts: ["PANCAKE", "WAFFLE"] }, { i1: px(1051544), i2: px(1172105), ans: "FIREFLY", opts: ["FIREFLY", "LIGHTBULB"] }, { i1: px(298611), i2: px(4114920), ans: "TOOTHPASTE", opts: ["TOOTHPASTE", "DENTIST"] }, { i1: px(1379636), i2: px(132468), ans: "SUNFLOWER", opts: ["SUNFLOWER", "DAISY"] }, { i1: px(1170986), i2: px(143580), ans: "CATWALK", opts: ["CATWALK", "SIDEWALK"] }, { i1: px(733475), i2: px(346618), ans: "SNOWMAN", opts: ["SNOWMAN", "ICEBERG"] }, { i1: px(335257), i2: px(1413412), ans: "EARRING", opts: ["EARRING", "JEWELRY"] } ],
-        4: [ { q: "12 + 15", a: [{t:"27", c:true}, {t:"25", c:false}] }, { q: "8 x 7", a: [{t:"56", c:true}, {t:"54", c:false}] }, { q: "100 - 37", a: [{t:"63", c:true}, {t:"73", c:false}] }, { q: "9 x 9", a: [{t:"81", c:true}, {t:"72", c:false}] }, { q: "14 + 19", a: [{t:"33", c:true}, {t:"31", c:false}] }, { q: "6 x 12", a: [{t:"72", c:true}, {t:"62", c:false}] }, { q: "150 - 75", a: [{t:"75", c:true}, {t:"85", c:false}] }, { q: "25 x 4", a: [{t:"100", c:true}, {t:"125", c:false}] }, { q: "(10 x 2) + 5", a: [{t:"25", c:true}, {t:"20", c:false}] }, { q: "64 / 8", a: [{t:"8", c:true}, {t:"6", c:false}] } ]
+    // SVG Icons (Rain, Bow, Key, Board)
+    const icons = {
+        rain: `<svg viewBox="0 0 24 24"><path d="M8.5,20c-1.3,0-2.3-1-2.4-2.3c0-0.1,0-0.1,0-0.2c0-1.1,0.7-2,1.7-2.3C8.1,14.8,8.5,14,9.3,13.5c0.7-0.5,1.7-0.6,2.5-0.2c0.8,0.4,1.4,1.2,1.5,2.1c1.4,0.1,2.5,1.2,2.5,2.6c0,1.4-1.1,2.5-2.5,2.5H8.5z M10,10l-1,3 M14,10l-1,3 M12,8l-1,3"/></svg>`,
+        bow: `<svg viewBox="0 0 24 24"><path d="M18.4,4.2l-1.4,1.4c1.3,1.3,2,3,2,4.8s-0.7,3.5-2,4.8l1.4,1.4c1.6-1.6,2.6-3.8,2.6-6.2S20,5.8,18.4,4.2z M3,12c0,3.9,3.1,7,7,7v-2c-2.8,0-5-2.2-5-5s2.2-5,5-5V5C6.1,5,3,8.1,3,12z"/></svg>`,
+        key: `<svg viewBox="0 0 24 24"><path d="M12.7,10.3C12.1,9.5,11.1,9,10,9c-1.7,0-3,1.3-3,3s1.3,3,3,3c1.1,0,2.1-0.5,2.7-1.3l2.3,2.3l1.5-1.5l-1.3-1.3l1.5-1.5L15,10.3L12.7,10.3z"/></svg>`,
+        board: `<svg viewBox="0 0 24 24"><path d="M20,5H4C2.9,5,2,5.9,2,7v10c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V7C22,5.9,21.1,5,20,5z M20,17H4V7h16V17z"/></svg>`,
+        foot: `<svg viewBox="0 0 24 24"><path d="M18,12c0-3.3-2.7-6-6-6s-6,2.7-6,6s2.7,6,6,6S18,15.3,18,12z"/></svg>`,
+        ball: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg>`
     };
 
-    function startLvl(l) { if(l > unlockedLvl) return; currentLvl = l; score = 0; finishedSectors = []; document.getElementById('level-screen').classList.add('hidden'); document.getElementById('grid-screen').classList.remove('hidden'); document.getElementById('summary-screen').classList.add('hidden'); updateGrid(); }
+    const levels = {
+        1: [ {q:"10 + 5?", a:[{t:"15",c:true},{t:"12",c:false}]}, {q:"Sun rise?", a:[{t:"East",c:true},{t:"West",c:false}]} ],
+        2: [ {q:"EPACS", ans:"SPACE"}, {q:"LPAPE", ans:"APPLE"} ],
+        3: [ 
+            {i1:"rain", i2:"bow", ans:"RAINBOW", opts:["RAINBOW","SUNSET"]},
+            {i1:"key", i2:"board", ans:"KEYBOARD", opts:["KEYBOARD","PIANO"]},
+            {i1:"foot", i2:"ball", ans:"FOOTBALL", opts:["FOOTBALL","SOCCER"]}
+        ],
+        4: [ {q:"9 x 9", a:[{t:"81",c:true},{t:"72",c:false}]}, {q:"(5+5)x2", a:[{t:"20",c:true},{t:"15",c:false}]} ]
+    };
 
-    function updateGrid() {
+    function startLvl(l) {
+        if(l > unlockedLvl) return;
+        currentLvl = l; score = 0; finishedCount = 0;
+        document.getElementById('home-screen').classList.add('hidden');
+        document.getElementById('grid-screen').classList.remove('hidden');
+        renderGrid();
+    }
+
+    function renderGrid() {
         const grid = document.getElementById('sector-grid'); grid.innerHTML = '';
         document.getElementById('score-tracker').innerText = `💎 ${score}/6`;
         for(let i=0; i<10; i++) {
-            const btn = document.createElement('button'); btn.className = finishedSectors.includes(i) ? 'num-btn done' : 'num-btn';
+            const btn = document.createElement('button'); btn.className = 'num-btn'; btn.id = 's'+i;
             btn.innerText = `S-${i+1}`; btn.onclick = () => loadQ(i); grid.appendChild(btn);
         }
     }
@@ -92,23 +107,25 @@
         document.getElementById('grid-screen').classList.add('hidden');
         document.getElementById('play-screen').classList.remove('hidden');
         document.getElementById('result-ui').classList.add('hidden');
-        const area = document.getElementById('game-area'), qData = gameData[currentLvl][idx];
-        area.innerHTML = '';
+        document.getElementById('s'+idx).classList.add('done');
+        
+        const area = document.getElementById('game-area'); area.innerHTML = '';
+        const data = levels[currentLvl][idx % levels[currentLvl].length];
 
         if(currentLvl === 3) {
-            document.getElementById('q-text').innerText = "COMBINE:";
-            area.innerHTML = `<div class="rebus-ui"><img src="${qData.i1}" class="rebus-img"> <div style="font-size:2rem">+</div> <img src="${qData.i2}" class="rebus-img"></div>`;
+            document.getElementById('q-text').innerText = "COMBINE CONCEPTS";
+            area.innerHTML = `<div class="rebus-ui"><div class="icon-box">${icons[data.i1]}</div><div style="font-size:2rem">+</div><div class="icon-box">${icons[data.i2]}</div></div>`;
             const g = document.createElement('div'); g.className = 'ans-grid';
-            [...qData.opts].sort(() => Math.random() - 0.5).forEach(t => {
-                const b = document.createElement('button'); b.className = 'ans-btn'; b.innerText = t; b.onclick = () => check(t === qData.ans, b, idx); g.appendChild(b);
+            data.opts.sort(()=>Math.random()-0.5).forEach(t => {
+                const b = document.createElement('button'); b.className='ans-btn'; b.innerText=t; b.onclick=()=>check(t===data.ans,b); g.appendChild(b);
             });
             area.appendChild(g);
         } else {
-            document.getElementById('q-text').innerText = (currentLvl === 4) ? `SOLVE: ${qData.q}` : qData.q;
+            document.getElementById('q-text').innerText = data.q || "SOLVE IT";
             const g = document.createElement('div'); g.className = 'ans-grid';
-            const choices = qData.a ? qData.a : [{t:qData.ans, c:true}, {t:"WRONG", c:false}];
-            [...choices].sort(() => Math.random() - 0.5).forEach(opt => {
-                const b = document.createElement('button'); b.className = 'ans-btn'; b.innerText = opt.t; b.onclick = () => check(opt.c, b, idx); g.appendChild(b);
+            const opts = data.a ? data.a : [{t:data.ans, c:true}, {t:"WRONG", c:false}];
+            opts.sort(()=>Math.random()-0.5).forEach(o => {
+                const b = document.createElement('button'); b.className='ans-btn'; b.innerText=o.t; b.onclick=()=>check(o.c,b); g.appendChild(b);
             });
             area.appendChild(g);
         }
@@ -116,50 +133,51 @@
     }
 
     function startTimer() {
-        let t = (currentLvl === 4) ? 5 : 12;
+        let t = (currentLvl === 4) ? 5 : 10;
         const fill = document.getElementById('timer-fill'); fill.style.width = '100%';
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
-            t--; fill.style.width = (t / (currentLvl === 4 ? 5 : 12) * 100) + '%';
-            if(t <= 0) { clearInterval(timerInterval); check(false, null, -1); }
+            t--; fill.style.width = (t/10*100)+'%';
+            if(t <= 0) { clearInterval(timerInterval); check(false, null); }
         }, 1000);
     }
 
-    function check(correct, btn, idx) {
-        clearInterval(timerInterval); if(idx !== -1) finishedSectors.push(idx);
-        if(correct) { if(btn) btn.classList.add('correct'); score++; } 
+    function check(correct, btn) {
+        clearInterval(timerInterval); finishedCount++;
+        if(correct) { score++; if(btn) btn.classList.add('correct'); }
         else { if(btn) btn.classList.add('wrong'); }
         document.getElementById('result-ui').classList.remove('hidden');
-        document.getElementById('feedback-text').innerText = correct ? "WIN! ✨" : "LOST! ❌";
-        
-        if(finishedSectors.length === 10) {
-            document.getElementById('continue-btn').onclick = finishLevel;
-        }
+        document.getElementById('feedback-text').innerText = correct ? "WIN!" : "LOSS!";
     }
 
-    function finishLevel() {
-        document.getElementById('play-screen').classList.add('hidden');
-        document.getElementById('summary-screen').classList.remove('hidden');
-        if(score >= 6) { 
-            unlockedLvl = Math.max(unlockedLvl, currentLvl + 1);
-            document.getElementById('summary-msg').innerText = `Good Job! Only took ${score} points.`;
+    function nextAction() {
+        if(finishedCount === 10) {
+            document.getElementById('play-screen').classList.add('hidden');
+            document.getElementById('summary-screen').classList.remove('hidden');
+            if(score >= 7) {
+                document.getElementById('summary-msg').innerText = `Good Job! Only took ${score} points.`;
+                unlockedLvl = Math.max(unlockedLvl, currentLvl + 1);
+            } else {
+                document.getElementById('summary-msg').innerText = `Level Over. Score: ${score}. (7 needed for bonus)`;
+                if(score >= 6) unlockedLvl = Math.max(unlockedLvl, currentLvl + 1);
+            }
         } else {
-            document.getElementById('summary-msg').innerText = `Try Again! You only got ${score} points. (Need 6)`;
+            document.getElementById('grid-screen').classList.remove('hidden');
+            document.getElementById('play-screen').classList.add('hidden');
+            document.getElementById('score-tracker').innerText = `💎 ${score}/6`;
         }
     }
 
-    function forceSkip() {
+    function skipLevel() {
         unlockedLvl = Math.min(4, currentLvl + 1);
-        showHome();
+        backToHome();
     }
 
-    function backToGrid() { document.getElementById('grid-screen').classList.remove('hidden'); document.getElementById('play-screen').classList.add('hidden'); updateGrid(); }
-    
-    function showHome() {
-        document.getElementById('level-screen').classList.remove('hidden');
-        document.getElementById('grid-screen').classList.add('hidden');
+    function backToHome() {
         document.getElementById('summary-screen').classList.add('hidden');
-        document.querySelectorAll('.level-card').forEach((c,i)=> i < unlockedLvl ? c.classList.add('unlocked') : null);
+        document.getElementById('grid-screen').classList.add('hidden');
+        document.getElementById('home-screen').classList.remove('hidden');
+        document.querySelectorAll('.level-card').forEach((c,i)=> i<unlockedLvl?c.classList.add('unlocked'):null);
     }
 </script>
 </body>
