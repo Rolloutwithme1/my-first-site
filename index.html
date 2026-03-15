@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON COMMANDER: EMOJI AUTO-WIN</title>
+    <title>NEON COMMANDER: TYPE & WIN</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         :root { --blue: #00f2ff; --pink: #ff00ea; --bg: #050505; --card: #121212; --green: #00ff88; --red: #ff4d4d; }
@@ -17,6 +17,11 @@
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; }
         .num-btn { padding: 15px 5px; background: #222; border: 1px solid var(--blue); color: white; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .num-btn.done { border-color: var(--pink); color: var(--pink); opacity: 0.4; pointer-events: none; }
+        
+        /* Input Styling */
+        .type-input { background: #000; border: 2px solid var(--blue); border-radius: 8px; padding: 12px; color: var(--blue); font-family: 'Orbitron'; font-size: 1.2rem; width: 80%; text-align: center; outline: none; margin-bottom: 15px; }
+        .type-input:focus { border-color: var(--pink); box-shadow: 0 0 10px var(--pink); }
+
         .rebus-ui { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 20px 0; font-size: 5rem; }
         .emoji-box { width: 110px; height: 110px; background: #1a1a1a; border: 2px solid var(--pink); border-radius: 15px; display: flex; align-items: center; justify-content: center; }
         .ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
@@ -33,9 +38,9 @@
     <div id="home-screen">
         <h1 style="color: var(--blue);">NEON HUB</h1>
         <div id="btn-lvl1" class="level-card unlocked" onclick="startLvl(1)">LVL 1: GK EMOJI</div>
-        <div id="btn-lvl2" class="level-card" onclick="startLvl(2)">LVL 2: JUMBLED</div>
+        <div id="btn-lvl2" class="level-card" onclick="startLvl(2)">LVL 2: TYPE JUMBLED</div>
         <div id="btn-lvl3" class="level-card" onclick="startLvl(3)">LVL 3: EMOJI REBUS</div>
-        <div id="btn-lvl4" class="level-card" onclick="startLvl(4)">LVL 4: MATH BOSS 🔥</div>
+        <div id="btn-lvl4" class="level-card" onclick="startLvl(4)">LVL 4: TYPE MATH BOSS 🔥</div>
     </div>
 
     <div id="grid-screen" class="hidden">
@@ -85,7 +90,7 @@
             {e1:"🌧️", e2:"🌈", ans:"RAINBOW", opts:["RAINBOW", "STORM"]},
             {e1:"🔑", e2:"⌨️", ans:"KEYBOARD", opts:["KEYBOARD", "PIANO"]},
             {e1:"🦶", e2:"⚽", ans:"FOOTBALL", opts:["FOOTBALL", "SOCCER"]},
-            {e1:"🔥", e2:"🪰", ans:"FIREFLY", opts:["FIREFLY", "LIGHT"]},
+            {e1:"🔥", e2:"🦟", ans:"FIREFLY", opts:["FIREFLY", "LIGHT"]},
             {e1:"🍳", e2:"🎂", ans:"PANCAKE", opts:["PANCAKE", "WAFFLE"]},
             {e1:"🦷", e2:"🧴", ans:"TOOTHPASTE", opts:["TOOTHPASTE", "SOAP"]},
             {e1:"☀️", e2:"🌻", ans:"SUNFLOWER", opts:["SUNFLOWER", "DAISY"]},
@@ -93,7 +98,12 @@
             {e1:"👂", e2:"💍", ans:"EARRING", opts:["EARRING", "JEWEL"]},
             {e1:"🐈", e2:"🚶", ans:"CATWALK", opts:["CATWALK", "DOGRUN"]}
         ],
-        4: Array.from({length:10}, (_,i)=>({ q: `Solve: ${(i+5)} + ${i+2}`, a: [{t:(i+5+i+2)+"", c:true}, {t:"Wrong", c:false}] }))
+        4: [ 
+            {q: "12 + 15", ans: "27"}, {q: "8 x 7", ans: "56"}, {q: "100 - 37", ans: "63"}, 
+            {q: "9 x 9", ans: "81"}, {q: "25 x 4", ans: "100"}, {q: "14 + 19", ans: "33"},
+            {q: "6 x 12", ans: "72"}, {q: "50 + 50", ans: "100"}, {q: "81 / 9", ans: "9"},
+            {q: "10 x 10", ans: "100"}
+        ]
     };
 
     function startLvl(l) { 
@@ -120,8 +130,28 @@
         const area = document.getElementById('game-area'); area.innerHTML = '';
         const data = gameData[currentLvl][idx];
 
-        if(currentLvl === 3) {
-            document.getElementById('q-text').innerText = "COMBINE THE EMOJIS:";
+        if(currentLvl === 2 || currentLvl === 4) {
+            // TYPING INTERFACE
+            document.getElementById('q-text').innerText = (currentLvl === 2) ? `UNJUMBLE: ${data.q}` : `SOLVE: ${data.q}`;
+            const input = document.createElement('input');
+            input.className = 'type-input';
+            input.placeholder = "Type answer...";
+            input.id = "user-input";
+            area.appendChild(input);
+            
+            const subBtn = document.createElement('button');
+            subBtn.className = 'btn-main';
+            subBtn.innerText = "SUBMIT";
+            subBtn.onclick = () => check(input.value.trim().toUpperCase() === data.ans.toUpperCase(), null, idx);
+            area.appendChild(subBtn);
+            
+            // Allow Enter key to submit
+            input.addEventListener("keyup", (e) => { if(e.key === "Enter") subBtn.click(); });
+            setTimeout(() => input.focus(), 100);
+
+        } else if(currentLvl === 3) {
+            // EMOJI REBUS (Clicking)
+            document.getElementById('q-text').innerText = "COMBINE:";
             area.innerHTML = `<div class="rebus-ui"><div class="emoji-box">${data.e1}</div><div style="font-size:2rem;color:var(--blue)">+</div><div class="emoji-box">${data.e2}</div></div>`;
             const g = document.createElement('div'); g.className = 'ans-grid';
             data.opts.forEach(t => {
@@ -129,10 +159,10 @@
             });
             area.appendChild(g);
         } else {
+            // GK (Clicking)
             document.getElementById('q-text').innerText = data.q;
             const g = document.createElement('div'); g.className = 'ans-grid';
-            const opts = data.a ? data.a : [{t:data.ans, c:true}, {t:"WRONG", c:false}];
-            opts.sort(()=>Math.random()-0.5).forEach(o => {
+            data.a.sort(()=>Math.random()-0.5).forEach(o => {
                 const b = document.createElement('button'); b.className = 'ans-btn'; b.innerText = o.t; b.onclick = () => check(o.c, b, idx); g.appendChild(b);
             });
             area.appendChild(g);
@@ -141,11 +171,11 @@
     }
 
     function startTimer() {
-        let t = 10;
+        let t = 12;
         const fill = document.getElementById('timer-fill'); fill.style.width = '100%';
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
-            t--; fill.style.width = (t*10)+'%';
+            t--; fill.style.width = (t/12*100)+'%';
             if(t <= 0) { clearInterval(timerInterval); check(false, null, -1); }
         }, 1000);
     }
@@ -156,14 +186,14 @@
         if(correct) { if(btn) btn.classList.add('correct'); score++; }
         else { if(btn) btn.classList.add('wrong'); }
         
-        // AUTO-WIN LOGIC: If score hits 7, skip straight to summary
+        // AUTO-WIN LOGIC
         if(score === 7) {
             setTimeout(showSummary, 600);
             return;
         }
 
         document.getElementById('result-ui').classList.remove('hidden');
-        document.getElementById('feedback-text').innerText = correct ? "MATCH! ✨" : "ERROR! ❌";
+        document.getElementById('feedback-text').innerText = correct ? "CORRECT! ✨" : "WRONG! ❌";
         
         const nextBtn = document.getElementById('next-btn');
         if(finishedSectors.length === 10) {
