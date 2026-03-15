@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON COMMANDER: SOUND FIXED! 🔊🔥</title>
+    <title>NEON COMMANDER: SHUFFLE EDITION 🔀🔥</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         :root { --blue: #00f2ff; --pink: #ff00ea; --bg: #050505; --card: #121212; --green: #00ff88; --red: #ff4d4d; --fire: #ff6a00; }
@@ -27,7 +27,8 @@
         .num-btn.done { border-color: var(--pink); color: var(--pink); opacity: 0.4; pointer-events: none; }
 
         .ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
-        .ans-btn { padding: 15px; background: #1a1a1a; border: 1px solid #444; color: white; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; }
+        .ans-btn { padding: 15px; background: #1a1a1a; border: 1px solid #444; color: white; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; transition: 0.2s; }
+        .ans-btn:hover { border-color: var(--blue); background: #222; }
         .correct { background: var(--green) !important; color: black !important; }
         .wrong { background: var(--red) !important; }
         
@@ -75,7 +76,6 @@
 </div>
 
 <script>
-    // --- 🔊 SOUND SYSTEM FIX ---
     const sounds = {
         win: new Audio('https://actions.google.com/sounds/v1/cartoon/clime_up_the_ladder.ogg'),
         lose: new Audio('https://actions.google.com/sounds/v1/cartoon/slide_whistle_to_drum_hit.ogg'),
@@ -84,15 +84,13 @@
 
     function playSnd(name) {
         sounds[name].currentTime = 0;
-        sounds[name].play().catch(e => console.log("Sound blocked by browser."));
+        sounds[name].play().catch(e => console.log("Sound muted"));
     }
 
     function initAndStart(l) {
-        // Play an empty sound to "unlock" audio context
         Object.values(sounds).forEach(s => { s.play(); s.pause(); });
         startLevel(l);
     }
-    // --- END SOUND FIX ---
 
     let currentLvl = 1;
     let unlockedLvl = 1;
@@ -103,6 +101,7 @@
     let finishedNums = [];
     let timerInterval;
 
+    // DATA REMAINS THE SAME...
     const data = {
         1: [
             { q: "Capital of India? 🇮🇳", hint: "It's in the North, starts with D!", a: [{t:"Delhi", c:true}, {t:"Mumbai", c:false}] },
@@ -161,6 +160,17 @@
         }
     }
 
+    // 🔀 FISHER-YATES SHUFFLE ALGORITHM
+    function shuffle(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex != 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
     function loadQ(idx) {
         currentQIndex = idx;
         document.getElementById('grid-screen').classList.add('hidden');
@@ -177,10 +187,12 @@
         document.getElementById('q-text').innerText = qData.q || `UNSCRAMBLE: ${qData.j}`;
         
         if(qData.a) {
+            // SHUFFLE OPTIONS BEFORE BUILDING BUTTONS
+            const shuffledOptions = shuffle([...qData.a]); 
             const g = document.createElement('div'); g.className = 'ans-grid';
-            qData.a.forEach(opt => {
+            shuffledOptions.forEach(opt => {
                 const b = document.createElement('button'); b.className = 'ans-btn';
-                b.innerText = opt.t; b.onclick = () => check(opt.c, b, qData.a);
+                b.innerText = opt.t; b.onclick = () => check(opt.c, b);
                 g.appendChild(b);
             });
             area.appendChild(g);
@@ -188,7 +200,7 @@
             const inp = document.createElement('input'); inp.id = "user-inp";
             inp.placeholder = "Answer... ✍️";
             const b = document.createElement('button'); b.className = "btn-main"; 
-            b.innerText = "🚀 SUBMIT"; b.onclick = () => check(inp.value.toUpperCase().trim() === (qData.c || qData.ans), null, (qData.c || qData.ans));
+            b.innerText = "🚀 SUBMIT"; b.onclick = () => check(inp.value.toUpperCase().trim() === (qData.c || qData.ans), null);
             area.appendChild(inp); area.appendChild(b);
         }
         startTimer();
@@ -219,11 +231,11 @@
         timerInterval = setInterval(() => {
             t--;
             fill.style.width = (t / (currentLvl === 4 ? 5 : 15) * 100) + '%';
-            if(t <= 0) { clearInterval(timerInterval); check(false, null, "TIME OUT ⏰"); }
+            if(t <= 0) { clearInterval(timerInterval); check(false, null); }
         }, 1000);
     }
 
-    function check(isCorrect, btn, extra) {
+    function check(isCorrect, btn) {
         clearInterval(timerInterval);
         const tracker = document.getElementById('score-tracker');
         if(isCorrect) {
