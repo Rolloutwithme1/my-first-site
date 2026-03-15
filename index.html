@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON COMMANDER: FINAL EDITION</title>
+    <title>NEON COMMANDER: ULTIMATE</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         :root { --blue: #00f2ff; --pink: #ff00ea; --bg: #050505; --card: #121212; --green: #00ff88; --red: #ff4d4d; }
         body { font-family: 'Orbitron', sans-serif; background: var(--bg); color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow: hidden; }
-        .container { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--blue); width: 95%; max-width: 500px; text-align: center; position: relative; box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
+        .container { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--blue); width: 95%; max-width: 500px; text-align: center; position: relative; }
         .hidden { display: none !important; }
         .timer-box { width: 100%; height: 10px; background: #222; border-radius: 10px; margin: 15px 0; overflow: hidden; }
         #timer-fill { height: 100%; width: 100%; background: linear-gradient(to right, var(--pink), var(--blue)); transition: width 1s linear; }
@@ -17,106 +17,113 @@
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; }
         .num-btn { padding: 15px 5px; background: #222; border: 1px solid var(--blue); color: white; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .num-btn.done { border-color: var(--pink); color: var(--pink); opacity: 0.4; pointer-events: none; }
-        .rebus-ui { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 15px 0; }
-        .rebus-img { width: 110px; height: 110px; object-fit: contain; border: 2px solid var(--pink); border-radius: 12px; background: white; }
+        .rebus-ui { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 20px 0; }
+        .icon-box { width: 100px; height: 100px; background: #fff; border: 3px solid var(--pink); border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 10px; }
+        .icon-box svg { width: 100%; height: 100%; }
         .ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
-        .ans-btn { padding: 15px; background: #1a1a1a; border: 1px solid #444; color: white; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; transition: 0.2s; }
-        .ans-btn:hover { border-color: var(--blue); }
+        .ans-btn { padding: 15px; background: #1a1a1a; border: 1px solid #444; color: white; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; }
         .correct { background: var(--green) !important; color: black !important; }
         .wrong { background: var(--red) !important; }
         .btn-main { background: var(--blue); color: black; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; }
-        .btn-skip-lvl { background: #222; color: #666; padding: 10px; border: 1px solid #333; border-radius: 8px; width: 100%; cursor: pointer; font-family: 'Orbitron'; margin-top: 10px; font-size: 0.7rem; }
-        #summary-screen h2 { color: var(--green); text-shadow: 0 0 10px var(--green); }
+        .btn-skip { background: #222; color: #777; padding: 8px; border: 1px solid #333; border-radius: 8px; width: 100%; cursor: pointer; font-family: 'Orbitron'; margin-top: 10px; font-size: 0.7rem; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="level-screen">
-        <h1 style="color: var(--blue); letter-spacing: 2px;">NEON COMMANDER</h1>
-        <div id="btn-lvl1" class="level-card unlocked" onclick="startLvl(1)">LVL 1: GK QUIZ</div>
+    <div id="home-screen">
+        <h1 style="color: var(--blue);">NEON HUB</h1>
+        <div id="btn-lvl1" class="level-card unlocked" onclick="startLvl(1)">LVL 1: GK CHALLENGE</div>
         <div id="btn-lvl2" class="level-card" onclick="startLvl(2)">LVL 2: JUMBLED</div>
-        <div id="btn-lvl3" class="level-card" onclick="startLvl(3)">LVL 3: STABLE REBUS</div>
-        <div id="btn-lvl4" class="level-card" onclick="startLvl(4)">LVL 4: BOSS MATH 🔥</div>
+        <div id="btn-lvl3" class="level-card" onclick="startLvl(3)">LVL 3: REBUS PUZZLE</div>
+        <div id="btn-lvl4" class="level-card" onclick="startLvl(4)">LVL 4: MATH BOSS 🔥</div>
     </div>
 
     <div id="grid-screen" class="hidden">
         <div style="display:flex; justify-content: space-between; align-items: center;">
-            <button onclick="showHome()" style="color:var(--pink); background:none; border:none; cursor:pointer; font-size: 1.5rem;">🏠</button>
-            <h2 id="score-tracker" style="color: var(--blue);">💎 0/7</h2>
+            <button onclick="showHome()" style="color:var(--pink); background:none; border:none; cursor:pointer; font-size:1.5rem;">🏠</button>
+            <h2 id="score-tracker">💎 0/7</h2>
         </div>
-        <p style="font-size: 0.8rem; color: #888;">Complete all 10 sectors to finish level</p>
         <div class="grid" id="sector-grid"></div>
-        <button class="btn-skip-lvl" onclick="forceSkip()">⏩ SKIP LEVEL (NO SUMMARY)</button>
+        <button class="btn-skip" onclick="skipLevel()">⏩ SKIP LEVEL (NO BONUS)</button>
     </div>
 
     <div id="play-screen" class="hidden">
         <div class="timer-box"><div id="timer-fill"></div></div>
-        <h3 id="q-text" style="min-height: 50px;"></h3>
+        <h3 id="q-text" style="min-height:60px;"></h3>
         <div id="game-area"></div>
         <div id="result-ui" class="hidden">
-            <p id="feedback-text" style="font-size: 1.2rem; font-weight: bold;"></p>
-            <button class="btn-main" id="continue-btn">NEXT SECTOR</button>
+            <p id="feedback-text"></p>
+            <button class="btn-main" id="next-btn">CONTINUE</button>
         </div>
     </div>
 
     <div id="summary-screen" class="hidden">
-        <h2>LEVEL COMPLETE!</h2>
-        <p id="summary-msg" style="font-size: 1.3rem; margin: 30px 0; color: white; line-height: 1.6;"></p>
-        <button class="btn-main" onclick="showHome()">RETURN TO HUB</button>
+        <h2 style="color: var(--green);">LEVEL COMPLETE!</h2>
+        <p id="summary-msg" style="font-size: 1.4rem; margin: 25px 0;"></p>
+        <button class="btn-main" onclick="showHome()">BACK TO HUB</button>
     </div>
 </div>
 
 <script>
     let currentLvl = 1, unlockedLvl = 1, score = 0, finishedSectors = [], timerInterval;
 
+    // Guaranteed SVGs (No internet needed)
+    const icons = {
+        rain: `<svg viewBox="0 0 24 24" fill="#00bfff"><path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z"/></svg>`,
+        bow: `<svg viewBox="0 0 24 24" fill="#ff00ea"><path d="M17,2V4H15V2H17M7,2V4H9V2H7M2,20V22H22V20H2z M12,4A8,8 0 0,1 20,12H22A10,10 0 0,0 12,2V4M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4z"/></svg>`,
+        key: `<svg viewBox="0 0 24 24" fill="#ffd700"><path d="M7,14A5,5 0 0,1 2,9A5,5 0 0,1 7,4C8.83,4 10.42,5 11.27,6.5L14,4L17,7L15,9L17,11L14,14L12,12L11.27,11.5C10.42,13 8.83,14 7,14Z"/></svg>`,
+        board: `<svg viewBox="0 0 24 24" fill="#8b4513"><path d="M20,15H4V5H20M20,3H4C2.89,3 2,3.89 2,5V15C2,16.1 2.89,17 4,17H11V19H8V21H16V19H13V17H20C21.1,17 22,16.1 22,15V5C22,3.89 21.1,3 20,3Z"/></svg>`,
+        foot: `<svg viewBox="0 0 24 24" fill="#000"><path d="M12,2C10.89,2 10,2.89 10,4V10H6V4C6,2.89 5.11,2 4,2S2,2.89 2,4V16C2,19.31 4.69,22 8,22H16C19.31,22 22,19.31 22,16V4C22,2.89 21.11,2 20,2S18,2.89 18,4V10H14V4C14,2.89 13.11,2 12,2Z"/></svg>`,
+        ball: `<svg viewBox="0 0 24 24" fill="#000"><circle cx="12" cy="12" r="10"/></svg>`,
+        fire: `<svg viewBox="0 0 24 24" fill="#ff4500"><path d="M17.66,11.2C17.43,10.9 17.15,10.64 16.89,10.38C16.22,9.7 15.46,9.02 15.46,7.82C15.46,6.74 15.94,5.83 16.67,5.13C15.55,4.94 14.28,5.19 13.39,6.12C12.31,7.25 12.31,8.97 13.38,10.1C13.59,10.32 13.84,10.5 14.1,10.64C14.77,10.97 15.49,11.16 15.49,12.11C15.49,13.06 14.89,13.62 14.22,13.88C13.55,14.14 12.83,14.22 12.16,14.22C11.49,14.22 10.82,14.11 10.16,13.88C9.5,13.66 8.83,13.32 8.33,12.82C7.83,12.32 7.5,11.66 7.5,11C7.5,10.33 7.83,9.66 8.33,9.16C8.83,8.66 9.5,8.32 10.16,8.1C10.82,7.88 11.49,7.77 12.16,7.77V5.77C9.33,5.77 6.5,7.5 5.23,10.08C4,12.65 4.5,15.75 6.46,17.71C8.42,19.67 11.5,20.17 14.08,18.94C16.65,17.7 18.38,14.87 18.38,12.04C18.38,11.75 18.33,11.46 18.25,11.18L17.66,11.2Z"/></svg>`,
+        fly: `<svg viewBox="0 0 24 24" fill="#555"><path d="M12.6,7L13.1,10H18L14.5,13L16,19L12,16L8,19L9.5,13L6,10H10.9L11.4,7H12.6Z"/></svg>`
+    };
+
     const gameData = {
-        1: Array(10).fill({ q: "Is water wet?", a: [{t:"Yes", c:true}, {t:"No", c:false}] }),
-        2: [ { q: "XOLBRO", ans: "ROBLOX" }, { q: "ZAPZI", ans: "PIZZA" }, { q: "SOTHG", ans: "GHOST" }, { q: "EPACS", ans: "SPACE" }, { q: "LPAPE", ans: "APPLE" }, { q: "RITEG", ans: "TIGER" }, { q: "ONEPH", ans: "PHONE" }, { q: "TEWRA", ans: "WATER" }, { q: "ECNAD", ans: "DANCE" }, { q: "CISUM", ans: "MUSIC" } ],
-        3: [ 
-            { i1: "https://img.icons8.com/color/144/rain.png", i2: "https://img.icons8.com/color/144/bow.png", ans: "RAINBOW", opts: ["RAINBOW", "SUNSET"] },
-            { i1: "https://img.icons8.com/color/144/key.png", i2: "https://img.icons8.com/color/144/keyboard.png", ans: "KEYBOARD", opts: ["KEYBOARD", "PIANO"] },
-            { i1: "https://img.icons8.com/color/144/foot.png", i2: "https://img.icons8.com/color/144/football.png", ans: "FOOTBALL", opts: ["FOOTBALL", "SOCCER"] },
-            { i1: "https://img.icons8.com/color/144/frying-pan.png", i2: "https://img.icons8.com/color/144/cake.png", ans: "PANCAKE", opts: ["PANCAKE", "WAFFLE"] },
-            { i1: "https://img.icons8.com/color/144/fire.png", i2: "https://img.icons8.com/color/144/fly.png", ans: "FIREFLY", opts: ["FIREFLY", "LIGHTBULB"] },
-            { i1: "https://img.icons8.com/color/144/tooth.png", i2: "https://img.icons8.com/color/144/toothpaste.png", ans: "TOOTHPASTE", opts: ["TOOTHPASTE", "DENTIST"] },
-            { i1: "https://img.icons8.com/color/144/sun.png", i2: "https://img.icons8.com/color/144/flower.png", ans: "SUNFLOWER", opts: ["SUNFLOWER", "GARDEN"] },
-            { i1: "https://img.icons8.com/color/144/cat.png", i2: "https://img.icons8.com/color/144/walking.png", ans: "CATWALK", opts: ["CATWALK", "SIDEWALK"] },
-            { i1: "https://img.icons8.com/color/144/snow.png", i2: "https://img.icons8.com/color/144/man.png", ans: "SNOWMAN", opts: ["SNOWMAN", "ICE"] },
-            { i1: "https://img.icons8.com/color/144/ear.png", i2: "https://img.icons8.com/color/144/diamond-ring.png", ans: "EARRING", opts: ["EARRING", "NECKLACE"] }
+        1: [
+            { q: "Which planet is the 'Red Planet'?", a: [{t:"Mars", c:true}, {t:"Venus", c:false}] },
+            { q: "How many legs does a Spider have?", a: [{t:"8", c:true}, {t:"6", c:false}] },
+            { q: "What is the capital of France?", a: [{t:"Paris", c:true}, {t:"Rome", c:false}] },
+            { q: "Which is the largest ocean?", a: [{t:"Pacific", c:true}, {t:"Atlantic", c:false}] },
+            { q: "What is $5 \times 5$?", a: [{t:"25", c:true}, {t:"20", c:false}] },
+            { q: "Which gas do humans breathe to live?", a: [{t:"Oxygen", c:true}, {t:"Nitrogen", c:false}] },
+            { q: "How many colors are in a Rainbow?", a: [{t:"7", c:true}, {t:"6", c:false}] },
+            { q: "Who painted the Mona Lisa?", a: [{t:"Da Vinci", c:true}, {t:"Picasso", c:false}] },
+            { q: "What is the boiling point of water?", a: [{t:"100°C", c:true}, {t:"0°C", c:false}] },
+            { q: "Which is the fastest land animal?", a: [{t:"Cheetah", c:true}, {t:"Lion", c:false}] }
         ],
-        4: [ 
-            { q: "12 + 15", a: [{t:"27", c:true}, {t:"25", c:false}] }, 
-            { q: "8 x 7", a: [{t:"56", c:true}, {t:"54", c:false}] }, 
-            { q: "100 - 37", a: [{t:"63", c:true}, {t:"73", c:false}] }, 
-            { q: "9 x 9", a: [{t:"81", c:true}, {t:"72", c:false}] }, 
-            { q: "(10 x 2) + 5", a: [{t:"25", c:true}, {t:"30", c:false}] }, 
-            { q: "14 + 19", a: [{t:"33", c:true}, {t:"31", c:false}] }, 
-            { q: "6 x 12", a: [{t:"72", c:true}, {t:"62", c:false}] }, 
-            { q: "150 - 75", a: [{t:"75", c:true}, {t:"85", c:false}] }, 
-            { q: "25 x 4", a: [{t:"100", c:true}, {t:"125", c:false}] }, 
-            { q: "64 / 8", a: [{t:"8", c:true}, {t:"6", c:false}] } 
-        ]
+        2: [ {q:"XOLBRO", ans:"ROBLOX"}, {q:"ZAPZI", ans:"PIZZA"}, {q:"SOTHG", ans:"GHOST"}, {q:"EPACS", ans:"SPACE"}, {q:"LPAPE", ans:"APPLE"}, {q:"RITEG", ans:"TIGER"}, {q:"ONEPH", ans:"PHONE"}, {q:"TEWRA", ans:"WATER"}, {q:"ECNAD", ans:"DANCE"}, {q:"CISUM", ans:"MUSIC"} ],
+        3: [
+            {i1:"rain", i2:"bow", ans:"RAINBOW", opts:["RAINBOW", "SUNSET"]},
+            {i1:"key", i2:"board", ans:"KEYBOARD", opts:["KEYBOARD", "PIANO"]},
+            {i1:"foot", i2:"ball", ans:"FOOTBALL", opts:["FOOTBALL", "SOCCER"]},
+            {i1:"fire", i2:"fly", ans:"FIREFLY", opts:["FIREFLY", "LIGHT"]},
+            {i1:"rain", i2:"foot", ans:"RAINBOW", opts:["STORM", "PUDDLE"]}, // Filler for variety
+            {i1:"key", i2:"ball", ans:"KEYBALL", opts:["LOCK", "KEYBALL"]},
+            {i1:"fire", i2:"board", ans:"FIREBOARD", opts:["FIREBOARD", "DASH"]},
+            {i1:"rain", i2:"fly", ans:"RAINFLY", opts:["RAINFLY", "BUG"]},
+            {i1:"foot", i2:"board", ans:"FOOTBOARD", opts:["FOOTBOARD", "BED"]},
+            {i1:"key", i2:"bow", ans:"KEYBOW", opts:["KEYBOW", "RIBBON"]}
+        ],
+        4: [ {q:"12+15", a:[{t:"27", c:true}, {t:"25", c:false}]}, {q:"8x7", a:[{t:"56", c:true}, {t:"52", c:false}]}, {q:"100-37", a:[{t:"63", c:true}, {t:"73", c:false}]}, {q:"9x9", a:[{t:"81", c:true}, {t:"72", c:false}]}, {q:"(5+5)x2", a:[{t:"20", c:true}, {t:"15", c:false}]}, {q:"45/5", a:[{t:"9", c:true}, {t:"7", c:false}]}, {q:"14+19", a:[{t:"33", c:true}, {t:"31", c:false}]}, {q:"6x12", a:[{t:"72", c:true}, {t:"62", c:false}]}, {q:"150-75", a:[{t:"75", c:true}, {t:"85", c:false}]}, {q:"11x11", a:[{t:"121", c:true}, {t:"111", c:false}]} ]
     };
 
     function startLvl(l) { 
         if(l > unlockedLvl) return; 
         currentLvl = l; score = 0; finishedSectors = []; 
-        document.getElementById('level-screen').classList.add('hidden'); 
+        document.getElementById('home-screen').classList.add('hidden'); 
         document.getElementById('grid-screen').classList.remove('hidden'); 
-        document.getElementById('summary-screen').classList.add('hidden'); 
-        updateGrid(); 
+        renderGrid(); 
     }
 
-    function updateGrid() {
+    function renderGrid() {
         const grid = document.getElementById('sector-grid'); grid.innerHTML = '';
         document.getElementById('score-tracker').innerText = `💎 ${score}/7`;
         for(let i=0; i<10; i++) {
-            const btn = document.createElement('button'); 
+            const btn = document.createElement('button');
             btn.className = finishedSectors.includes(i) ? 'num-btn done' : 'num-btn';
-            btn.innerText = `S-${i+1}`; 
-            btn.onclick = () => loadQ(i); 
-            grid.appendChild(btn);
+            btn.innerText = `S-${i+1}`; btn.onclick = () => loadQ(i); grid.appendChild(btn);
         }
     }
 
@@ -124,23 +131,23 @@
         document.getElementById('grid-screen').classList.add('hidden');
         document.getElementById('play-screen').classList.remove('hidden');
         document.getElementById('result-ui').classList.add('hidden');
-        const area = document.getElementById('game-area'), qData = gameData[currentLvl][idx % 10];
-        area.innerHTML = '';
+        const area = document.getElementById('game-area'); area.innerHTML = '';
+        const data = gameData[currentLvl][idx];
 
         if(currentLvl === 3) {
-            document.getElementById('q-text').innerText = "COMBINE THE IMAGES:";
-            area.innerHTML = `<div class="rebus-ui"><img src="${qData.i1}" class="rebus-img"> <div style="font-size:2rem; color:var(--blue)">+</div> <img src="${qData.i2}" class="rebus-img"></div>`;
+            document.getElementById('q-text').innerText = "COMBINE CONCEPTS:";
+            area.innerHTML = `<div class="rebus-ui"><div class="icon-box">${icons[data.i1]}</div><div style="font-size:2rem;color:var(--blue)">+</div><div class="icon-box">${icons[data.i2]}</div></div>`;
             const g = document.createElement('div'); g.className = 'ans-grid';
-            [...qData.opts].sort(() => Math.random() - 0.5).forEach(t => {
-                const b = document.createElement('button'); b.className = 'ans-btn'; b.innerText = t; b.onclick = () => check(t === qData.ans, b, idx); g.appendChild(b);
+            data.opts.sort(()=>Math.random()-0.5).forEach(t => {
+                const b = document.createElement('button'); b.className = 'ans-btn'; b.innerText = t; b.onclick = () => check(t===data.ans, b, idx); g.appendChild(b);
             });
             area.appendChild(g);
         } else {
-            document.getElementById('q-text').innerText = (currentLvl === 4) ? `MATH CHALLENGE: ${qData.q}` : qData.q;
+            document.getElementById('q-text').innerText = (currentLvl === 4) ? `SOLVE: ${data.q}` : data.q;
             const g = document.createElement('div'); g.className = 'ans-grid';
-            const choices = qData.a ? qData.a : [{t:qData.ans, c:true}, {t:"WRONG", c:false}];
-            [...choices].sort(() => Math.random() - 0.5).forEach(opt => {
-                const b = document.createElement('button'); b.className = 'ans-btn'; b.innerText = opt.t; b.onclick = () => check(opt.c, b, idx); g.appendChild(b);
+            const choices = data.a ? data.a : [{t:data.ans, c:true}, {t:"WRONG", c:false}];
+            [...choices].sort(()=>Math.random()-0.5).forEach(o => {
+                const b = document.createElement('button'); b.className = 'ans-btn'; b.innerText = o.t; b.onclick = () => check(o.c, b, idx); g.appendChild(b);
             });
             area.appendChild(g);
         }
@@ -148,12 +155,11 @@
     }
 
     function startTimer() {
-        let maxTime = (currentLvl === 4) ? 5 : 12;
-        let t = maxTime;
+        let t = (currentLvl === 4) ? 5 : 10;
         const fill = document.getElementById('timer-fill'); fill.style.width = '100%';
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
-            t--; fill.style.width = (t / maxTime * 100) + '%';
+            t--; fill.style.width = (t/10*100)+'%';
             if(t <= 0) { clearInterval(timerInterval); check(false, null, -1); }
         }, 1000);
     }
@@ -161,53 +167,47 @@
     function check(correct, btn, idx) {
         clearInterval(timerInterval); 
         if(idx !== -1 && !finishedSectors.includes(idx)) finishedSectors.push(idx);
-        if(correct) { if(btn) btn.classList.add('correct'); score++; } 
+        if(correct) { if(btn) btn.classList.add('correct'); score++; }
         else { if(btn) btn.classList.add('wrong'); }
         
         document.getElementById('result-ui').classList.remove('hidden');
-        document.getElementById('feedback-text').innerText = correct ? "SYSTEM MATCHED! ✨" : "ERROR DETECTED! ❌";
-        document.getElementById('feedback-text').style.color = correct ? "var(--green)" : "var(--red)";
+        document.getElementById('feedback-text').innerText = correct ? "SUCCESS! ✨" : "FAILURE! ❌";
         
-        // If all 10 are done, change button to "FINISH LEVEL"
+        const nextBtn = document.getElementById('next-btn');
         if(finishedSectors.length === 10) {
-            document.getElementById('continue-btn').innerText = "CALCULATE RESULTS";
-            document.getElementById('continue-btn').onclick = finishLevel;
+            nextBtn.innerText = "FINISH LEVEL";
+            nextBtn.onclick = showSummary;
         } else {
-            document.getElementById('continue-btn').innerText = "NEXT SECTOR";
-            document.getElementById('continue-btn').onclick = backToGrid;
+            nextBtn.innerText = "NEXT SECTOR";
+            nextBtn.onclick = () => {
+                document.getElementById('grid-screen').classList.remove('hidden');
+                document.getElementById('play-screen').classList.add('hidden');
+                renderGrid();
+            };
         }
     }
 
-    function finishLevel() {
+    function showSummary() {
         document.getElementById('play-screen').classList.add('hidden');
         document.getElementById('summary-screen').classList.remove('hidden');
-        
-        if(score >= 7) { 
+        if(score >= 7) {
             unlockedLvl = Math.max(unlockedLvl, currentLvl + 1);
-            document.getElementById('summary-msg').innerText = `Good Job! Only took ${score} points. Next level unlocked!`;
-        } else if (score >= 4) {
-             unlockedLvl = Math.max(unlockedLvl, currentLvl + 1);
-             document.getElementById('summary-msg').innerText = `Level cleared with ${score} points. But no 'Good Job' bonus (Need 7).`;
+            document.getElementById('summary-msg').innerText = `Good Job! Only took ${score} points.`;
         } else {
-            document.getElementById('summary-msg').innerText = `Access Denied! You only got ${score} points. You need at least 4 to pass.`;
+            document.getElementById('summary-msg').innerText = `You got ${score} points. Try harder to earn the 'Good Job' badge!`;
+            if(score >= 6) unlockedLvl = Math.max(unlockedLvl, currentLvl + 1);
         }
     }
 
-    function forceSkip() {
+    function skipLevel() {
         unlockedLvl = Math.min(4, currentLvl + 1);
-        showHome(); // Skips summary screen as requested
+        showHome();
     }
 
-    function backToGrid() { 
-        document.getElementById('grid-screen').classList.remove('hidden'); 
-        document.getElementById('play-screen').classList.add('hidden'); 
-        updateGrid(); 
-    }
-    
     function showHome() {
-        document.getElementById('level-screen').classList.remove('hidden');
-        document.getElementById('grid-screen').classList.add('hidden');
         document.getElementById('summary-screen').classList.add('hidden');
+        document.getElementById('grid-screen').classList.add('hidden');
+        document.getElementById('home-screen').classList.remove('hidden');
         document.querySelectorAll('.level-card').forEach((c,i)=> i < unlockedLvl ? c.classList.add('unlocked') : null);
     }
 </script>
