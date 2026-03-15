@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON COMMANDER: STREAK EDITION 🔥</title>
+    <title>NEON COMMANDER: HINT EDITION 💡🔥</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         :root { --blue: #00f2ff; --pink: #ff00ea; --bg: #050505; --card: #121212; --green: #00ff88; --red: #ff4d4d; --fire: #ff6a00; }
@@ -12,31 +12,32 @@
         .container { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--blue); box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); width: 95%; max-width: 500px; text-align: center; position: relative; }
         .hidden { display: none !important; }
 
-        /* Timer Bar */
-        .timer-box { width: 100%; height: 10px; background: #222; border-radius: 5px; margin: 15px 0; overflow: hidden; border: 1px solid var(--blue); }
-        #timer-fill { height: 100%; width: 100%; background: linear-gradient(to right, var(--blue), var(--pink)); transition: width 1s linear; }
+        .timer-box { width: 100%; height: 12px; background: #222; border-radius: 10px; margin: 15px 0; overflow: hidden; border: 1px solid var(--blue); }
+        #timer-fill { height: 100%; width: 100%; background: linear-gradient(to right, #ff00ea, #00f2ff); transition: width 1s linear; }
 
-        /* Streak & Fire FX */
-        #score-tracker { transition: 0.3s; font-weight: bold; }
-        .on-fire { color: var(--fire) !important; text-shadow: 0 0 10px #ffae00, 0 0 20px #ff6a00, 0 0 30px #ff0000; animation: burn 0.5s infinite alternate; }
-        @keyframes burn { from { transform: scale(1); } to { transform: scale(1.1); } }
+        #score-tracker { font-size: 1.2rem; margin-bottom: 10px; }
+        .on-fire { color: var(--fire) !important; text-shadow: 0 0 20px #ff6a00; animation: burn 0.4s infinite alternate; }
+        @keyframes burn { from { transform: scale(1); } to { transform: scale(1.15); } }
 
-        #streak-popup { position: absolute; top: 20%; left: 50%; transform: translate(-50%, -50%); color: var(--fire); font-size: 3rem; font-weight: 900; z-index: 50; pointer-events: none; text-shadow: 0 0 20px var(--fire); animation: pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes pop { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } }
+        .level-card { background: #1e1e1e; margin: 10px 0; padding: 15px; border-radius: 12px; border-left: 6px solid #444; cursor: pointer; transition: 0.3s; opacity: 0.5; font-size: 1.1rem; }
+        .unlocked { opacity: 1; border-left-color: var(--pink); border-right: 1px solid var(--blue); transform: scale(1.02); }
 
-        /* Grid & Buttons */
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; }
-        .num-btn { padding: 15px; background: #222; border: 1px solid var(--blue); color: white; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .num-btn.done { border-color: var(--pink); color: var(--pink); opacity: 0.6; }
+        .num-btn { padding: 15px; background: #222; border: 1px solid var(--blue); color: white; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1rem; }
+        .num-btn.done { border-color: var(--pink); color: var(--pink); opacity: 0.4; pointer-events: none; }
 
         .ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
         .ans-btn { padding: 15px; background: #1a1a1a; border: 1px solid #444; color: white; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; }
         .correct { background: var(--green) !important; color: black !important; }
         .wrong { background: var(--red) !important; }
         
-        input { width: 80%; padding: 15px; background: #000; border: 2px solid var(--blue); color: white; text-align: center; border-radius: 10px; font-size: 1.2rem; font-family: 'Orbitron'; margin-bottom: 10px;}
+        input { width: 85%; padding: 15px; background: #000; border: 2px solid var(--blue); color: white; text-align: center; border-radius: 10px; font-size: 1.2rem; font-family: 'Orbitron'; margin-bottom: 10px;}
         .btn-main { background: var(--blue); color: black; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         
+        .hint-btn { background: #333; color: #ffae00; border: 1px solid #ffae00; padding: 8px 15px; border-radius: 20px; cursor: pointer; margin-bottom: 10px; font-family: 'Orbitron'; font-size: 0.8rem; }
+        .hint-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        #hint-text { color: #ffae00; font-style: italic; margin-top: 5px; font-size: 0.9rem; }
+
         .shake { animation: shake 0.4s; }
         @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-8px);} 75% {transform: translateX(8px);} }
     </style>
@@ -44,60 +45,88 @@
 <body>
 
 <div class="container" id="game-container">
-    <div id="streak-popup" class="hidden">STREAK!! 🔥</div>
-
     <div id="level-screen">
-        <h1 style="color: var(--blue);">MISSION HUB</h1>
-        <div style="background:#1e1e1e; padding:15px; border-radius:10px; border-left:5px solid var(--pink); cursor:pointer;" onclick="startLevel(1)">LVL 1: GK QUIZ 🧠</div>
-        <div id="lv2" style="background:#1e1e1e; padding:15px; border-radius:10px; border-left:5px solid #444; margin-top:10px; opacity:0.5;">LVL 2: JUMBLE (Unlock at 7 pts)</div>
+        <h1 style="color: var(--blue);">👾 GAMER HUB 🕹️</h1>
+        <div id="btn-lvl1" class="level-card unlocked" onclick="startLevel(1)">🛸 LVL 1: GK QUIZ 🧠</div>
+        <div id="btn-lvl2" class="level-card" onclick="startLevel(2)">🎈 LVL 2: JUMBLE 🔠</div>
+        <div id="btn-lvl3" class="level-card" onclick="startLevel(3)">⚽ LVL 3: MATH RUSH 🔢</div>
+        <div id="btn-lvl4" class="level-card" onclick="startLevel(4)">💀 LVL 4: BOSS MODE 🔥</div>
     </div>
 
     <div id="grid-screen" class="hidden">
-        <h2 id="score-tracker">Score: 0/7</h2>
+        <div style="display:flex; justify-content: space-between; align-items: center;">
+            <button onclick="showLevels()" style="color:var(--pink); background:none; border:none; cursor:pointer; font-size:1.5rem;">🔙</button>
+            <h2 id="score-tracker">💎 Score: 0/6</h2>
+        </div>
         <div class="grid" id="number-grid"></div>
+        <p id="lvl-info">Target: 6 Wins! 🎯</p>
     </div>
 
     <div id="play-screen" class="hidden">
         <div class="timer-box"><div id="timer-fill"></div></div>
-        <h3 id="q-text">Question</h3>
+        <button id="hint-trigger" class="hint-btn" onclick="useHint()">💡 HINT (2/2)</button>
+        <p id="hint-text" class="hidden"></p>
+        <h3 id="q-text">Question? 🤔</h3>
         <div id="game-area"></div>
         <div id="result-overlay" class="hidden">
-            <p id="feedback-text"></p>
-            <button class="btn-main" onclick="backToGrid()">NEXT</button>
+            <p id="feedback-text" style="font-size: 1.5rem; font-weight: bold;"></p>
+            <button class="btn-main" onclick="backToGrid()">CONTINUE 🚀</button>
         </div>
     </div>
 </div>
 
 <script>
     let currentLvl = 1;
+    let unlockedLvl = 1;
     let score = 0;
     let streak = 0;
+    let hintsLeft = 2;
+    let currentQIndex = 0;
     let finishedNums = [];
     let timerInterval;
-    let timeLeft = 15;
-
-    const winSnd = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3');
-    const loseSnd = new Audio('https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3');
 
     const data = {
         1: [
-            { q: "Capital of India?", a: [{t:"Delhi", c:true}, {t:"Mumbai", c:false}] },
-            { q: "Red Planet?", a: [{t:"Mars", c:true}, {t:"Venus", c:false}] },
-            { q: "Water formula?", a: [{t:"H2O", c:true}, {t:"CO2", c:false}] },
-            { q: "Biggest Animal?", a: [{t:"Blue Whale", c:true}, {t:"Shark", c:false}] },
-            { q: "Sun is a...?", a: [{t:"Star", c:true}, {t:"Planet", c:false}] },
-            { q: "7 + 3?", a: [{t:"10", c:true}, {t:"21", c:false}] },
-            { q: "Color of sky?", a: [{t:"Blue", c:true}, {t:"Green", c:false}] },
-            { q: "King of Jungle?", a: [{t:"Lion", c:true}, {t:"Tiger", c:false}] },
-            { q: "20 / 4?", a: [{t:"5", c:true}, {t:"4", c:false}] },
-            { q: "Fastest man?", a: [{t:"Usain Bolt", c:true}, {t:"Me", c:false}] }
+            { q: "Capital of India? 🇮🇳", hint: "It's in the North, starts with D!", a: [{t:"Delhi", c:true}, {t:"Mumbai", c:false}] },
+            { q: "Red Planet? 🔴", hint: "Think of Elon Musk's goal!", a: [{t:"Mars", c:true}, {t:"Venus", c:false}] },
+            { q: "Sun is a? ☀️", hint: "It twinkles like the others!", a: [{t:"Star", c:true}, {t:"Planet", c:false}] },
+            { q: "King of Jungle? 🦁", hint: "He has a big mane!", a: [{t:"Lion", c:true}, {t:"Tiger", c:false}] },
+            { q: "Water is? 💧", hint: "Two Parts Hydrogen...", a: [{t:"H2O", c:true}, {t:"CO2", c:false}] },
+            { q: "Fastest Bird? 🦅", hint: "It dives like a jet!", a: [{t:"Falcon", c:true}, {t:"Crow", c:false}] },
+            { q: "Largest Ocean? 🌊", hint: "Starts with P, very calm name!", a: [{t:"Pacific", c:true}, {t:"Atlantic", c:false}] },
+            { q: "Bones in Human? 🦴", hint: "More than 200, less than 210!", a: [{t:"206", c:true}, {t:"100", c:false}] },
+            { q: "Apple is a? 🍎", hint: "Grows on trees, sweet!", a: [{t:"Fruit", c:true}, {t:"Veggie", c:false}] },
+            { q: "Moon orbits? 🌙", hint: "Where humans live!", a: [{t:"Earth", c:true}, {t:"Mars", c:false}] }
+        ],
+        2: [
+            { c: "ROBLOX", j: "XOLBRO 🎮", hint: "Popular blocky game!" }, { c: "PIZZA", j: "ZAPZI 🍕", hint: "Round Italian food!" }, 
+            { c: "GHOST", j: "SOTHG 👻", hint: "Goes Boo!" }, { c: "TIGER", j: "RITEG 🐯", hint: "Striped big cat!" }, 
+            { c: "APPLE", j: "LPAPE 🍎", hint: "iPhone logo!" }, { c: "PHONE", j: "ONEPH 📱", hint: "Used for calling!" }, 
+            { c: "WATER", j: "TEWRA 💧", hint: "You drink this!" }, { c: "SPACE", j: "EPACS 🚀", hint: "Where stars are!" }, 
+            { c: "DANCE", j: "ECNAD 💃", hint: "Moving to music!" }, { c: "MUSIC", j: "CISUM 🎵", hint: "You hear it!" }
+        ],
+        3: [
+            { q: "10 + 10 ➕", ans: "20", hint: "Two tens!" }, { q: "5 * 5 ✖️", ans: "25", hint: "A quarter of 100!" }, 
+            { q: "100 / 2 ➗", ans: "50", hint: "Half a century!" }, { q: "9 - 4 ➖", ans: "5", hint: "High five!" }, 
+            { q: "12 + 12 ➕", ans: "24", hint: "A double dozen!" }, { q: "8 * 2 ✖️", ans: "16", hint: "Age to get a license!" }, 
+            { q: "30 / 3 ➗", ans: "10", hint: "Number of fingers!" }, { q: "7 + 9 ➕", ans: "16", hint: "Same as 8+8!" }, 
+            { q: "11 * 3 ✖️", ans: "33", hint: "Three-Three!" }, { q: "50 - 10 ➖", ans: "40", hint: "A decade before 50!" }
+        ],
+        4: [
+            { q: "12 * 12 💀", ans: "144", hint: "Gross dozen!" }, { q: "Scramble 'DEVIL' 😈", c: "DEVIL", hint: "Opposite of Angel!" }, 
+            { q: "0 + 0? 🌌", ans: "0", hint: "Nothing plus nothing!" }, { q: "Mars Capital? 🛸", a: [{t:"None", c:true}, {t:"Elon City", c:false}], hint: "Is anyone living there yet?" }, 
+            { q: "1000 - 1? 📉", ans: "999", hint: "Biggest 3-digit number!" }, { q: "Scramble 'HACKER' 💻", c: "HACKER", hint: "Codes for bad or good!" }, 
+            { q: "Fire is hot? 🔥", a: [{t:"Yes", c:true}, {t:"No", c:false}], hint: "Don't touch it!" }, { q: "5 * 5 * 0? 🌀", ans: "0", hint: "Multiplying by zero always gives..." }, 
+            { q: "Blue + Yellow? 🧪", a: [{t:"Green", c:true}, {t:"Red", c:false}], hint: "Color of grass!" }, { q: "You won? 🏆", a: [{t:"Yes", c:true}, {t:"No", c:false}], hint: "Pick the happy one!" }
         ]
     };
 
     function startLevel(l) {
-        currentLvl = l; score = 0; streak = 0; finishedNums = [];
+        if(l > unlockedLvl) return;
+        currentLvl = l; score = 0; streak = 0; hintsLeft = 2; finishedNums = [];
         document.getElementById('level-screen').classList.add('hidden');
         document.getElementById('grid-screen').classList.remove('hidden');
+        document.getElementById('score-tracker').innerText = `💎 Score: 0/6`;
         genGrid();
     }
 
@@ -107,7 +136,7 @@
         for(let i=1; i<=10; i++) {
             const b = document.createElement('button');
             b.className = finishedNums.includes(i-1) ? 'num-btn done' : 'num-btn';
-            b.innerText = i;
+            b.innerText = `S-${i}`;
             b.disabled = finishedNums.includes(i-1);
             b.onclick = () => loadQ(i-1);
             grid.appendChild(b);
@@ -115,80 +144,102 @@
     }
 
     function loadQ(idx) {
+        currentQIndex = idx;
         document.getElementById('grid-screen').classList.add('hidden');
         document.getElementById('play-screen').classList.remove('hidden');
         document.getElementById('result-overlay').classList.add('hidden');
+        document.getElementById('hint-text').classList.add('hidden');
+        updateHintButton();
+        
         const area = document.getElementById('game-area');
         area.innerHTML = '';
         finishedNums.push(idx);
         
         const qData = data[currentLvl][idx];
-        document.getElementById('q-text').innerText = qData.q;
-
-        const g = document.createElement('div'); g.className = 'ans-grid';
-        qData.a.forEach(opt => {
-            const b = document.createElement('button'); b.className = 'ans-btn';
-            b.innerText = opt.t; b.onclick = () => check(opt.c, b);
-            g.appendChild(b);
-        });
-        area.appendChild(g);
+        document.getElementById('q-text').innerText = qData.q || `UNSCRAMBLE: ${qData.j}`;
+        
+        if(qData.a) {
+            const g = document.createElement('div'); g.className = 'ans-grid';
+            qData.a.forEach(opt => {
+                const b = document.createElement('button'); b.className = 'ans-btn';
+                b.innerText = opt.t; b.onclick = () => check(opt.c, b, qData.a);
+                g.appendChild(b);
+            });
+            area.appendChild(g);
+        } else {
+            const inp = document.createElement('input'); inp.id = "user-inp";
+            inp.placeholder = "Answer... ✍️";
+            const b = document.createElement('button'); b.className = "btn-main"; 
+            b.innerText = "🚀 SUBMIT"; b.onclick = () => check(inp.value.toUpperCase().trim() === (qData.c || qData.ans), null, (qData.c || qData.ans));
+            area.appendChild(inp); area.appendChild(b);
+        }
         startTimer();
     }
 
+    function useHint() {
+        if(hintsLeft > 0) {
+            hintsLeft--;
+            const hintBox = document.getElementById('hint-text');
+            hintBox.innerText = "🔎 " + data[currentLvl][currentQIndex].hint;
+            hintBox.classList.remove('hidden');
+            updateHintButton();
+        }
+    }
+
+    function updateHintButton() {
+        const btn = document.getElementById('hint-trigger');
+        btn.innerText = `💡 HINT (${hintsLeft}/2)`;
+        btn.disabled = hintsLeft <= 0;
+    }
+
     function startTimer() {
-        timeLeft = 15;
+        let t = (currentLvl === 4) ? 5 : 15;
         const fill = document.getElementById('timer-fill');
         fill.style.width = '100%';
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
-            timeLeft--;
-            fill.style.width = (timeLeft / 15 * 100) + '%';
-            if(timeLeft <= 0) { clearInterval(timerInterval); check(false, null); }
+            t--;
+            fill.style.width = (t / (currentLvl === 4 ? 5 : 15) * 100) + '%';
+            if(t <= 0) { clearInterval(timerInterval); check(false, null, "TIME OUT ⏰"); }
         }, 1000);
     }
 
-    function check(isCorrect, btn) {
+    function check(isCorrect, btn, extra) {
         clearInterval(timerInterval);
         const tracker = document.getElementById('score-tracker');
-        
         if(isCorrect) {
             if(btn) btn.classList.add('correct');
-            score++;
-            streak++;
-            winSnd.play();
-            
-            if(streak >= 3) {
-                tracker.classList.add('on-fire');
-                showStreakPopup();
-            }
+            score++; streak++;
+            if(streak >= 3) tracker.classList.add('on-fire');
         } else {
             if(btn) btn.classList.add('wrong');
-            streak = 0;
-            tracker.classList.remove('on-fire');
-            loseSnd.play();
+            streak = 0; tracker.classList.remove('on-fire');
             document.getElementById('game-container').classList.add('shake');
             setTimeout(() => document.getElementById('game-container').classList.remove('shake'), 400);
         }
-
-        tracker.innerText = `Score: ${score}/7 ${streak > 0 ? ' (Combo: ' + streak + ')' : ''}`;
+        tracker.innerText = `💎 Score: ${score}/6 ${streak > 0 ? '🔥' + streak : ''}`;
         document.getElementById('result-overlay').classList.remove('hidden');
-        document.getElementById('feedback-text').innerText = isCorrect ? "PERFECT! ✅" : "FAILED! ❌";
-        
-        if(score >= 7) {
-            setTimeout(() => { alert("LEVEL CLEARED! MISSION ACCOMPLISHED!"); location.reload(); }, 1000);
+        document.getElementById('feedback-text').innerText = isCorrect ? "SUCCESS! ✨" : "MISS! ❌";
+        document.getElementById('feedback-text').style.color = isCorrect ? 'var(--green)' : 'var(--red)';
+        if(score === 6) {
+            unlockedLvl = Math.max(unlockedLvl, currentLvl + 1);
+            document.getElementById(`btn-lvl${unlockedLvl}`).classList.add('unlocked');
         }
     }
 
-    function showStreakPopup() {
-        const p = document.getElementById('streak-popup');
-        p.classList.remove('hidden');
-        setTimeout(() => p.classList.add('hidden'), 1000);
+    function showLevels() {
+        document.getElementById('level-screen').classList.remove('hidden');
+        document.getElementById('grid-screen').classList.add('hidden');
     }
 
     function backToGrid() {
-        document.getElementById('grid-screen').classList.remove('hidden');
-        document.getElementById('play-screen').classList.add('hidden');
-        genGrid();
+        if(score >= 6) { alert("✅ MISSION PASSED!"); showLevels(); }
+        else if(finishedNums.length === 10) { alert("❌ MISSION FAILED!"); startLevel(currentLvl); }
+        else {
+            document.getElementById('grid-screen').classList.remove('hidden');
+            document.getElementById('play-screen').classList.add('hidden');
+            genGrid();
+        }
     }
 </script>
 </body>
